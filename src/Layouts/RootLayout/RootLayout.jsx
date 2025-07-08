@@ -1,13 +1,18 @@
-import React from 'react';
-import Navbar from '../../Shared/Navbar/Navbar';
+import React from "react";
+import Navbar from "../../Shared/Navbar/Navbar";
+import { Outlet } from "react-router";
+import { ToastContainer } from "react-toastify";
 
 const RootLayout = () => {
-    return (
-        <div>
-            <Navbar/>
-            <h1 className='text-3xl font-bold text-red-500'>Root Layout</h1>
-        </div>
-    );
+  return (
+    <div>
+    <ToastContainer position="top-right" autoClose={3000} hideProgressBar newestOnTop />
+      <Navbar />
+      <div>
+        <Outlet />
+      </div>
+    </div>
+  );
 };
 
 export default RootLayout;

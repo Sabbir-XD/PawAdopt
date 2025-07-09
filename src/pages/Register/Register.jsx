@@ -121,7 +121,7 @@ const Register = () => {
                 <div className="relative group">
                   <Avatar className="w-24 h-24 border-4 border-teal-100">
                     {imagePreview ? (
-                      <AvatarImage src={imagePreview} />
+                      <AvatarImage src={imagePreview} className="object-cover" />
                     ) : (
                       <AvatarFallback className="bg-teal-100 text-teal-600">
                         <FiUser className="w-8 h-8" />

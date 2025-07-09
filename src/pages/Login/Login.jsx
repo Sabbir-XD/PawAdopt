@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { FaPaw } from "react-icons/fa";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
@@ -17,9 +17,14 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import SocialLogin from "@/components/SocialLogin/SocialLogin";
+import UseAuth from "@/Hooks/UseAuth/UseAuth";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { handleLoginUser } = UseAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     register,
@@ -30,6 +35,17 @@ const Login = () => {
   const onSubmit = (data) => {
     console.log("Login Data:", data);
     // TODO: Call your login handler here
+    handleLoginUser(data.email, data.password)
+      .then((result) => {
+        console.log("User logged in successfully:", result.user);
+        // TODO: Redirect to home page or dashboard
+
+        navigate(location?.state || "/");
+        toast.success("Login successful!");
+      })
+      .catch((error) => {
+        console.error("Error logging in user:", error);
+      });
   };
 
   return (
@@ -158,7 +174,7 @@ const Login = () => {
                 to="/register"
                 className="text-teal-600 font-medium hover:underline"
               >
-                 Register here
+                Register here
               </Link>
             </p>
           </CardFooter>

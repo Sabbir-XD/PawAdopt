@@ -7,12 +7,7 @@ import Footer from "@/Shared/Footer/Footer";
 const RootLayout = () => {
   return (
     <div>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-      />
+      <ToastContainer position="top-right" autoClose={2000} />
       <Navbar />
       <div>
         <Outlet />

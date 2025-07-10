@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router";
 
 const SocialLogin = () => {
-  const { handleGoogleLoginUser } = UseAuth();
+  const { setUser,handleGoogleLoginUser } = UseAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,6 +27,7 @@ const SocialLogin = () => {
           updatedAt: new Date().toISOString(),
         };
 
+        // setUser(dataUser);
         console.log(dataUser);
         toast.success("Google Login successful!");
         navigate(location?.state || "/");

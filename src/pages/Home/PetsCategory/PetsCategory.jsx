@@ -1,202 +1,354 @@
-import { motion } from "framer-motion";
-import { FaDog, FaCat, FaPaw, FaFish, FaDove, FaAngleRight } from "react-icons/fa";
-import { GiRabbit, GiTurtle, GiParrotHead } from "react-icons/gi";
-import { useInView } from "react-intersection-observer";
-import { NavLink } from "react-router";
+import { FaPaw, FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CardSkeleton } from "@/components/Loading/Loading";
+import UseAuth from "@/Hooks/UseAuth/UseAuth";
 
-const PetsCategorySection = () => {
-  const [ref, inView] = useInView({
-    threshold: 0.1,
-    triggerOnce: true,
-  });
+const PetCategory = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState("right");
+  const [autoPlay, setAutoPlay] = useState(true);
+  const { loading } = UseAuth();
 
   const petCategories = [
     {
+      id: 1,
       name: "Dogs",
-      icon: <FaDog className="text-3xl md:text-4xl" />,
+      count: 142,
+      description: "Loyal companions for active families",
+      image:
+        "https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
       color: "from-amber-500 to-amber-600",
-      darkColor: "from-amber-600 to-amber-700",
-      count: 124,
-      description: "Loyal companions for every lifestyle",
-      bgPattern: "bg-[url('https://www.transparenttextures.com/patterns/dog-paw-pattern.png')]"
     },
     {
+      id: 2,
       name: "Cats",
-      icon: <FaCat className="text-3xl md:text-4xl" />,
+      count: 89,
+      description: "Independent yet affectionate friends",
+      image:
+        "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
       color: "from-gray-600 to-gray-700",
-      darkColor: "from-gray-700 to-gray-800",
-      count: 87,
-      description: "Independent and affectionate friends",
-      bgPattern: "bg-[url('https://www.transparenttextures.com/patterns/cat-paw-print.png')]"
     },
     {
+      id: 3,
       name: "Rabbits",
-      icon: <GiRabbit className="text-3xl md:text-4xl" />,
+      count: 31,
+      description: "Gentle and quiet companions",
+      image: "https://i.ibb.co/B9r1BzZ/saira-ahmed-J8-CDf-Hy-O7-Y-unsplash.jpg",
       color: "from-pink-500 to-pink-600",
-      darkColor: "from-pink-600 to-pink-700",
-      count: 32,
-      description: "Gentle and playful housemates",
-      bgPattern: "bg-[url('https://www.transparenttextures.com/patterns/rabbit-pattern.png')]"
     },
     {
-      name: "Fish",
-      icon: <FaFish className="text-3xl md:text-4xl" />,
-      color: "from-blue-500 to-blue-600",
-      darkColor: "from-blue-600 to-blue-700",
-      count: 45,
-      description: "Beautiful aquatic pets for your home",
-      bgPattern: "bg-[url('https://www.transparenttextures.com/patterns/fish-scale-pattern.png')]"
-    },
-    {
+      id: 4,
       name: "Birds",
-      icon: <FaDove className="text-3xl md:text-4xl" />,
-      color: "from-sky-500 to-sky-600",
-      darkColor: "from-sky-600 to-sky-700",
       count: 28,
       description: "Colorful and melodic companions",
-      bgPattern: "bg-[url('https://www.transparenttextures.com/patterns/feather-pattern.png')]"
+      image:
+        "https://images.unsplash.com/photo-1551085254-e96b210db58a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1580&q=80",
+      color: "from-sky-500 to-sky-600",
     },
     {
+      id: 5,
+      name: "Fish",
+      count: 45,
+      description: "Beautiful aquatic pets for your home",
+      image:
+        "https://i.ibb.co/LdKT8Kgv/david-clode-u5-K46-Puk-KAo-unsplash.jpg",
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      id: 6,
       name: "Small Pets",
-      icon: <FaPaw className="text-3xl md:text-4xl" />,
-      color: "from-teal-500 to-teal-600",
-      darkColor: "from-teal-600 to-teal-700",
       count: 39,
       description: "Hamsters, guinea pigs, and more",
-      bgPattern: "bg-[url('https://www.transparenttextures.com/patterns/paw-print.png')]"
+      image: "https://i.ibb.co/4RrcSp1S/images.jpg",
+      color: "from-teal-500 to-teal-600",
     },
     {
+      id: 7,
       name: "Reptiles",
-      icon: <GiTurtle className="text-3xl md:text-4xl" />,
+      count: 22,
+      description: "Fascinating scaly companions",
+      image:
+        "https://images.unsplash.com/photo-1559253664-ca249d4608c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
       color: "from-emerald-500 to-emerald-600",
-      darkColor: "from-emerald-600 to-emerald-700",
-      count: 18,
-      description: "Fascinating scaly friends",
-      bgPattern: "bg-[url('https://www.transparenttextures.com/patterns/reptile-skin.png')]"
     },
     {
-      name: "Exotic Pets",
-      icon: <GiParrotHead className="text-3xl md:text-4xl" />,
+      id: 8,
+      name: "Farm Animals",
+      count: 18,
+      description: "Gentle giants needing homes",
+      image:
+        "https://images.unsplash.com/photo-1500595046743-cd271d694d30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      color: "from-orange-500 to-orange-600",
+    },
+    {
+      id: 9,
+      name: "Senior Pets",
+      count: 57,
+      description: "Wise souls needing extra love",
+      image:
+        "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1364&q=80",
       color: "from-purple-500 to-purple-600",
-      darkColor: "from-purple-600 to-purple-700",
-      count: 12,
-      description: "Unique animals needing special care",
-      bgPattern: "bg-[url('https://www.transparenttextures.com/patterns/exotic-pattern.png')]"
-    }
+    },
+    {
+      id: 10,
+      name: "Special Needs",
+      count: 34,
+      description: "Resilient pets with big hearts",
+      image:
+        "https://images.unsplash.com/photo-1594149929911-78975a43d4f5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      color: "from-rose-500 to-rose-600",
+    },
+    {
+      id: 11,
+      name: "Exotic Pets",
+      count: 15,
+      description: "Unique animals needing care",
+      image:
+        "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80",
+      color: "from-fuchsia-500 to-fuchsia-600",
+    },
+    {
+      id: 12,
+      name: "Pocket Pets",
+      count: 42,
+      description: "Tiny friends with big personalities",
+      image:
+        "https://images.unsplash.com/photo-1537832816519-6890d6deba0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1458&q=80",
+      color: "from-indigo-500 to-indigo-600",
+    },
   ];
 
-  // Duplicate categories for infinite marquee effect
-  const marqueeCategories = [...petCategories, ...petCategories];
+  // Auto-rotate categories
+  useEffect(() => {
+    if (!autoPlay) return;
+
+    const interval = setInterval(() => {
+      setDirection("right");
+      setCurrentIndex((prev) =>
+        prev === petCategories.length - 1 ? 0 : prev + 1
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [autoPlay, petCategories.length]);
+
+  const nextSlide = () => {
+    setDirection("right");
+    setCurrentIndex((prev) =>
+      prev === petCategories.length - 1 ? 0 : prev + 1
+    );
+    setAutoPlay(false);
+    setTimeout(() => setAutoPlay(true), 10000);
+  };
+
+  const prevSlide = () => {
+    setDirection("left");
+    setCurrentIndex((prev) =>
+      prev === 0 ? petCategories.length - 1 : prev - 1
+    );
+    setAutoPlay(false);
+    setTimeout(() => setAutoPlay(true), 10000);
+  };
+
+  const goToSlide = (index) => {
+    setDirection(index > currentIndex ? "right" : "left");
+    setCurrentIndex(index);
+    setAutoPlay(false);
+    setTimeout(() => setAutoPlay(true), 10000);
+  };
+
+  // Determine visible categories (current, next, previous)
+  const visibleCategories = [
+    currentIndex === 0 ? petCategories.length - 1 : currentIndex - 1,
+    currentIndex,
+    currentIndex === petCategories.length - 1 ? 0 : currentIndex + 1,
+  ];
 
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-gradient-to-b from-teal-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-10 md:mb-14"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
-            Find Pets by <span className="text-teal-600 dark:text-teal-400">Category</span>
+    <section className="py-16 px-4 bg-gradient-to-b from-teal-50 to-white">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Browse Our <span className="text-teal-600">Pet Categories</span>
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Browse our available pets by category to find your perfect companion
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover your perfect companion from{" "}
+            {petCategories.reduce((sum, category) => sum + category.count, 0)}+
+            rescued animals
           </p>
-        </motion.div>
-
-        {/* Marquee Slider */}
-        <div className="relative overflow-hidden py-4 mb-8">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
-          </div>
-          <div className="relative flex">
-            <motion.div
-              className="flex"
-              animate={{
-                x: ["0%", "-100%"],
-              }}
-              transition={{
-                duration: 30,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            >
-              {marqueeCategories.map((category, index) => (
-                <div key={`marquee-${index}`} className="flex-shrink-0 px-4">
-                  <div className={`bg-gradient-to-br ${category.color} ${category.darkColor} dark:${category.darkColor} rounded-full px-6 py-2 flex items-center`}>
-                    <span className="text-white font-medium mr-2">{category.name}</span>
-                    <div className="text-white/80">{category.icon}</div>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
         </div>
 
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {petCategories.map((category, index) => (
-            <motion.div
-              key={category.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ y: -5 }}
-              className="group relative"
+        {/* Carousel Container */}
+        {loading ? (
+          <CardSkeleton />
+        ) : (
+          <div className="relative h-[400px] md:h-[450px]">
+            {/* Navigation Arrows */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-teal-700 p-3 rounded-full shadow-lg transition-all"
+              aria-label="Previous category"
             >
-              <NavLink
-                to={`/pets/${category.name.toLowerCase().replace(' ', '-')}`}
-                className="block h-full"
-              >
-                <div className={`relative overflow-hidden rounded-2xl p-6 h-full flex flex-col items-start text-left ${category.bgPattern} bg-opacity-10 dark:bg-opacity-5 bg-cover`}>
-                  {/* Gradient overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${category.color} dark:${category.darkColor} opacity-90 group-hover:opacity-95 transition-opacity`}></div>
-                  
-                  {/* Content */}
-                  <div className="relative z-10 w-full h-full flex flex-col">
-                    <div className="bg-white/20 p-3 rounded-full mb-4 backdrop-blur-sm">
-                      {category.icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-1">{category.name}</h3>
-                    <p className="text-white/90 text-sm mb-4">{category.description}</p>
-                    
-                    <div className="mt-auto flex justify-between items-end w-full">
-                      <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold text-white">
-                        {category.count} available
+              <FaArrowLeft />
+            </button>
+
+            <button
+              onClick={nextSlide}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-teal-700 p-3 rounded-full shadow-lg transition-all"
+              aria-label="Next category"
+            >
+              <FaArrowRight />
+            </button>
+
+            {/* Carousel Slides */}
+            <div className="relative h-full w-full overflow-hidden">
+              <AnimatePresence initial={false} custom={direction}>
+                {visibleCategories.map((index) => {
+                  const category = petCategories[index];
+                  const position =
+                    index === currentIndex
+                      ? "center"
+                      : index ===
+                        (currentIndex === 0
+                          ? petCategories.length - 1
+                          : currentIndex - 1)
+                      ? "left"
+                      : "right";
+
+                  return (
+                    <motion.div
+                      key={category.id}
+                      custom={direction}
+                      initial={{
+                        x:
+                          position === "left"
+                            ? "-100%"
+                            : position === "right"
+                            ? "100%"
+                            : "0%",
+                        opacity: position === "center" ? 1 : 0.7,
+                        scale: position === "center" ? 1 : 0.9,
+                      }}
+                      animate={{
+                        x:
+                          position === "left"
+                            ? "-25%"
+                            : position === "right"
+                            ? "25%"
+                            : "0%",
+                        opacity: position === "center" ? 1 : 0.7,
+                        scale: position === "center" ? 1 : 0.9,
+                        zIndex: position === "center" ? 10 : 1,
+                      }}
+                      exit={{
+                        x: direction === "right" ? "-100%" : "100%",
+                        opacity: 0,
+                        scale: 0.9,
+                      }}
+                      transition={{ duration: 0.7 }}
+                      className={`absolute top-0 ${
+                        position === "center"
+                          ? "left-1/2 -translate-x-1/2"
+                          : position === "left"
+                          ? "left-0"
+                          : "right-0"
+                      } w-full max-w-md`}
+                    >
+                      <div
+                        className={`bg-gradient-to-br ${
+                          category.color
+                        } rounded-2xl overflow-hidden shadow-xl h-[400px] md:h-[450px] flex flex-col transition-all duration-300 ${
+                          position === "center"
+                            ? "cursor-default"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={() =>
+                          position !== "center" && goToSlide(index)
+                        }
+                      >
+                        <div className="relative h-2/3 overflow-hidden">
+                          <img
+                            src={category.image}
+                            alt={category.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                          {position === "center" && (
+                            <div className="absolute bottom-4 left-4 bg-white/90 text-teal-800 px-4 py-2 rounded-full font-bold flex items-center gap-2">
+                              <FaPaw />
+                              <span>{category.count} Available</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-6 flex-1 flex flex-col">
+                          <h3
+                            className={`text-2xl font-bold mb-2 ${
+                              position === "center"
+                                ? "text-white"
+                                : "text-white/80"
+                            }`}
+                          >
+                            {category.name}
+                          </h3>
+                          <p
+                            className={`mb-4 ${
+                              position === "center"
+                                ? "text-white/90"
+                                : "text-white/70"
+                            }`}
+                          >
+                            {category.description}
+                          </p>
+                          {position === "center" && (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="mt-auto bg-white text-teal-700 hover:bg-teal-50 font-bold px-6 py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2"
+                            >
+                              <FaPaw />
+                              <span>View {category.name}</span>
+                            </motion.button>
+                          )}
+                        </div>
                       </div>
-                      <div className="text-white/80 group-hover:text-white transition-colors">
-                        <FaAngleRight className="text-lg" />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Hover effect */}
-                  <div className="absolute inset-0 border-2 border-white/20 group-hover:border-white/40 rounded-2xl transition-all duration-300 pointer-events-none"></div>
-                </div>
-              </NavLink>
-            </motion.div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
+
+        {/* Pagination Dots */}
+        <div className="flex justify-center gap-2 mt-8">
+          {petCategories.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                currentIndex === index ? "bg-teal-600 w-6" : "bg-gray-300"
+              }`}
+              aria-label={`Go to ${petCategories[index].name} category`}
+            />
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.8 }}
-          className="text-center mt-12"
-        >
-          <NavLink
-            to="/pets"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-teal-600 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all dark:focus:ring-teal-600"
+        {/* View All Button */}
+        <div className="text-center mt-12">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transition-all flex items-center gap-2 mx-auto"
           >
-            <FaPaw className="mr-2" />
-            View All Pets
-          </NavLink>
-        </motion.div>
+            <FaPaw />
+            <span>View All {petCategories.length} Categories</span>
+          </motion.button>
+        </div>
       </div>
     </section>
   );
 };
 
-export default PetsCategorySection;
+export default PetCategory;

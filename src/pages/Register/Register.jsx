@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-
 import {
   FiUser,
   FiMail,
@@ -22,17 +21,22 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import SocialLogin from "@/components/SocialLogin/SocialLogin";
 import { toast } from "react-toastify";
-
-const imgbbAPI = "a09a8222524fa1a942a159679dcd3dfc";
+import axios from "axios";
+import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 
 const Register = () => {
   const [imagePreview, setImagePreview] = useState(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { handleCreateUser, handleUpdateProfile, setUser } = UseAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const axiosSecure = useAxiosSecure();
 
   const {
     register,
@@ -41,63 +45,90 @@ const Register = () => {
     reset,
   } = useForm();
 
-  const handleImageChange = (e) => {
+  // ✅ Cloudinary Upload
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+    if (!file) return;
 
-  const uploadImageToImgbb = async (file) => {
+    setImagePreview(URL.createObjectURL(file));
+
     const formData = new FormData();
-    formData.append("image", file);
-    const res = await fetch.post(
-      `https://api.imgbb.com/1/upload?key=${imgbbAPI}`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-    return res.data.data.url;
-  };
+    formData.append("file", file);
+    formData.append("upload_preset", "petcare");
 
-  const onSubmit = async (data) => {
     try {
-      let imageUrl = "";
-      if (data.photo[0]) {
-        imageUrl = await uploadImageToImgbb(data.photo[0]);
-      }
-
-      const payload = {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        role: "user",
-        photo: imageUrl,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      await handleCreateUser(data.email, data.password)
-        .then((result) => {
-          console.log("User created successfully:", result.user);
-          handleUpdateProfile({ displayName: data.name, photoURL: imageUrl });
-          setUser(payload);
-        })
-        .catch((error) => {
-          console.error("Error creating user:", error);
-        });
-      console.log("Registration Data:", payload);
-      reset();
-      toast.success("Registration Successful!");
+      const { data } = await axios.post(
+        "https://api.cloudinary.com/v1_1/ddgcar30i/image/upload",
+        formData
+      );
+      setUploadedImageUrl(data.secure_url);
+      toast.success("Image uploaded successfully!");
     } catch (error) {
-      console.error("Upload Error:", error);
+      console.error("Cloudinary Upload Error:", error);
       toast.error("Image upload failed.");
     }
   };
 
+  const onSubmit = async (data) => {
+    if (!uploadedImageUrl) {
+      toast.error("Please upload your profile image first.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await handleCreateUser(data.email, data.password)
+        .then((result) => {
+          const user = result.user;
+          handleUpdateProfile({
+            displayName: data.name,
+            photoURL: uploadedImageUrl,
+          });
+          setUser({
+            ...user,
+            displayName: data.name,
+            photoURL: uploadedImageUrl,
+          });
+
+          const payload = {
+            name: data.name,
+            email: data.email,
+            role: "user",
+            photo: uploadedImageUrl,
+            uid: user.uid,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+
+          axiosSecure
+            .post("/users", payload)
+            .then((response) => {
+              console.log("User created successfully:", response.data);
+            })
+            .catch((error) => {
+              console.error("Error creating user:", error);
+            });
+
+          toast.success("Registration Successful!");
+          navigate(location?.state || "/");
+        })
+        .catch((error) => {
+          console.error("Error creating user:", error);
+          toast.error("Registration failed.");
+        });
+
+      reset();
+      setImagePreview(null);
+      setUploadedImageUrl("");
+    } catch (error) {
+      console.error("Registration Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-50 mt-10 p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -116,12 +147,15 @@ const Register = () => {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="p-6">
-              {/* Profile Image */}
+              {/* Profile Image Upload */}
               <div className="flex flex-col items-center mb-4">
                 <div className="relative group">
                   <Avatar className="w-24 h-24 border-4 border-teal-100">
                     {imagePreview ? (
-                      <AvatarImage src={imagePreview} className="object-cover" />
+                      <AvatarImage
+                        src={imagePreview}
+                        className="object-cover"
+                      />
                     ) : (
                       <AvatarFallback className="bg-teal-100 text-teal-600">
                         <FiUser className="w-8 h-8" />
@@ -133,16 +167,19 @@ const Register = () => {
                     <input
                       type="file"
                       accept="image/*"
-                      {...register("photo")}
+                      {...register("photo", { required: true })}
                       onChange={handleImageChange}
-                      className="hidden"
+                      className="file-input hidden"
                     />
                   </label>
                 </div>
                 <p className="text-sm text-teal-600 mt-2">Add profile photo</p>
+                {errors.photo && (
+                  <p className="text-sm text-red-500">Image is required</p>
+                )}
               </div>
 
-              {/* Name Field */}
+              {/* Full Name */}
               <div>
                 <Label htmlFor="name" className="text-teal-800">
                   Full Name
@@ -161,7 +198,7 @@ const Register = () => {
                 )}
               </div>
 
-              {/* Email Field */}
+              {/* Email */}
               <div className="mt-4">
                 <Label htmlFor="email" className="text-teal-800">
                   Email
@@ -187,7 +224,7 @@ const Register = () => {
                 )}
               </div>
 
-              {/* Password Field */}
+              {/* Password */}
               <div className="mt-4">
                 <Label htmlFor="password" className="text-teal-800">
                   Password
@@ -225,12 +262,13 @@ const Register = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
+                disabled={loading || !uploadedImageUrl}
                 className="w-full bg-teal-600 hover:bg-teal-700 mt-6"
               >
-                Register
+                {loading ? "Registering..." : "Register"}
               </Button>
 
-              {/* Social login */}
+              {/* Divider */}
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-teal-200" />
@@ -241,6 +279,7 @@ const Register = () => {
                   </span>
                 </div>
               </div>
+
               {/* Social login */}
               <SocialLogin />
             </CardContent>

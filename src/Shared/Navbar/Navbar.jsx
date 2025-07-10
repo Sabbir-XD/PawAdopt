@@ -21,6 +21,8 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  console.log(user);
+
   // Handle scroll effect for navbar
   useEffect(() => {
     const handleScroll = () => {
@@ -42,11 +44,11 @@ const Navbar = () => {
       to: "/donate",
       icon: <GiCash className="mr-2" />,
     },
-    {
-      name: "Favorites",
-      to: "/favorites",
-      icon: <FaHeart className="mr-2" />,
-    },
+    // {
+    //   name: "Favorites",
+    //   to: "/favorites",
+    //   icon: <FaHeart className="mr-2" />,
+    // },
   ];
 
   const baseLinkClass =
@@ -178,14 +180,6 @@ const Navbar = () => {
                     >
                       <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-xl ring-1 ring-black/5 z-50 focus:outline-none overflow-hidden">
                         <div className="py-1">
-                          <div className="px-4 py-3 border-b border-gray-100">
-                            <p className="text-sm font-medium text-teal-600">
-                              Signed in as
-                            </p>
-                            <p className="text-sm truncate text-gray-700">
-                              {user.email || user.displayName}
-                            </p>
-                          </div>
                           <Menu.Item>
                             {({ active }) => (
                               <NavLink
@@ -201,21 +195,7 @@ const Navbar = () => {
                               </NavLink>
                             )}
                           </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <NavLink
-                                to="/profile"
-                                className={`${
-                                  active
-                                    ? "bg-teal-50 text-teal-700"
-                                    : "text-gray-700"
-                                } block px-4 py-3 text-sm font-medium flex items-center`}
-                              >
-                                <FaUser className="mr-2 text-teal-600" />
-                                My Profile
-                              </NavLink>
-                            )}
-                          </Menu.Item>
+
                           <div className="border-t border-gray-100"></div>
                           <Menu.Item>
                             {({ active }) => (

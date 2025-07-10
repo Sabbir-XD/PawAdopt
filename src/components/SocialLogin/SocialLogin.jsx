@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router";
+import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 
 const SocialLogin = () => {
-  const { setUser,handleGoogleLoginUser } = UseAuth();
+  const { handleGoogleLoginUser } = UseAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const axiosSecure = useAxiosSecure();
 
   const googleLogin = () => {
     handleGoogleLoginUser()
@@ -18,14 +20,21 @@ const SocialLogin = () => {
         const data = result.user;
 
         const dataUser = {
-          name: data.name,
+          name: data.displayName,
           email: data.email,
-          password: data.password,
           role: "user",
           photoURL: data.photoURL,
+          uid: data.uid,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
+        
+        axiosSecure.put("/users", dataUser).then((data) => {
+          console.log(data);
+        }).catch((error) => {
+          console.log(error);
+        })
+
 
         // setUser(dataUser);
         console.log(dataUser);

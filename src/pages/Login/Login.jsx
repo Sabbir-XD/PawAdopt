@@ -19,12 +19,14 @@ import {
 import SocialLogin from "@/components/SocialLogin/SocialLogin";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import { toast } from "react-toastify";
+import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { handleLoginUser } = UseAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const axiosSecure = useAxiosSecure();
 
   const {
     register,
@@ -37,8 +39,22 @@ const Login = () => {
     // TODO: Call your login handler here
     handleLoginUser(data.email, data.password)
       .then((result) => {
-        console.log("User logged in successfully:", result.user);
+        // console.log("User logged in successfully:", result.user);
+        const user = result.user;
         // TODO: Redirect to home page or dashboard
+        const userData = {
+          email: user.email,
+          updatedAt: new Date().toISOString(),
+        };
+
+        axiosSecure
+          .put("/users", userData)
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
 
         navigate(location?.state || "/");
         toast.success("Login successful!");

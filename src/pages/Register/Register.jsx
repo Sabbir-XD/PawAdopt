@@ -94,7 +94,7 @@ const Register = () => {
             name: data.name,
             email: data.email,
             role: "user",
-            photo: uploadedImageUrl,
+            photoURL: uploadedImageUrl,
             uid: user.uid,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),

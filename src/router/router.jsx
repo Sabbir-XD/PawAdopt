@@ -7,6 +7,7 @@ import DashboardLayout from "@/Layouts/Dashboard/DashboardLayout";
 import Dashboard from "@/pages/Dashboard/Dashboard/Dashboard";
 import AddPetForm from "@/pages/Dashboard/AddPetForm/AddPetForm";
 import PrivetRoute from "@/Routes/PrivetRoutes/PrivetRoutes";
+import MyAddedPets from "@/pages/Dashboard/MyAddedPets/MyAddedPets";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivetRoute>
             <AddPetForm />
+          </PrivetRoute>
+        ),
+      },
+      {
+        path: "/dashboard/my-pets",
+        element: (
+          <PrivetRoute>
+            <MyAddedPets />
           </PrivetRoute>
         ),
       },

@@ -1,209 +1,261 @@
 import { useState, useRef } from "react";
-import { useForm } from "react-hook-form";
-import axios from "axios";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import Select from "react-select";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Loader2, PlusCircle, X } from "lucide-react";
-import { toast } from "react-toastify";
+import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
+import UseAuth from "@/Hooks/UseAuth/UseAuth";
 
-// Pet category options
 const petCategories = [
-  { value: "dog", label: "Dog" },
-  { value: "cat", label: "Cat" },
-  { value: "bird", label: "Bird" },
-  { value: "fish", label: "Fish" },
-  { value: "rabbit", label: "Rabbit" },
-  { value: "hamster", label: "Hamster" },
-  { value: "reptile", label: "Reptile" },
-  { value: "other", label: "Other" },
+  { value: "dog", label: "🐕 Dog" },
+  { value: "cat", label: "🐈 Cat" },
+  { value: "bird", label: "🦜 Bird" },
+  { value: "fish", label: "🐠 Fish" },
+  { value: "rabbit", label: "🐇 Rabbit" },
+  { value: "hamster", label: "🐹 Hamster" },
+  { value: "reptile", label: "🦎 Reptile" },
+  { value: "other", label: "🐾 Other" },
 ];
 
-const AddPetForm = () => {
-  const [loading, setLoading] = useState(false);
+const AddPetFormikForm = () => {
+  const [imagePreview, setImagePreview] = useState(null);
   const [uploadedImage, setUploadedImage] = useState("");
-  const [preview, setPreview] = useState(null);
-  const fileRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const axiosSecure = useAxiosSecure();
+  const {user} = UseAuth();
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm();
+  const initialValues = {
+    petName: "",
+    petAge: "",
+    petCategory: null,
+    petLocation: "",
+    shortDescription: "",
+    longDescription: "",
+  };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const validationSchema = Yup.object({
+    petName: Yup.string().required("Pet name is required"),
+    petAge: Yup.number()
+      .required("Pet age is required")
+      .min(0, "Age can't be negative")
+      .max(30, "Age is too high"),
+    petCategory: Yup.object().required("Pet category is required"),
+    petLocation: Yup.string().required("Location is required"),
+    shortDescription: Yup.string()
+      .max(100, "Max 100 characters")
+      .required("Short description is required"),
+    longDescription: Yup.string().required("Long description is required"),
+  });
 
-    setPreview(URL.createObjectURL(file));
-
+  const handleImageUpload = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "petcare");
-
     try {
       const res = await axios.post(
         "https://api.cloudinary.com/v1_1/ddgcar30i/image/upload",
         formData
       );
       setUploadedImage(res.data.secure_url);
-      toast.success("Image uploaded successfully!");
+      toast.success("Image uploaded successfully");
     } catch {
       toast.error("Image upload failed");
     }
   };
 
-  const onSubmit = async (data) => {
+  const handleSubmit = async (values, { resetForm }) => {
     if (!uploadedImage) {
-      toast.error("Please upload an image");
+      toast.error("Please upload an image first");
       return;
     }
-
-    if (!data.petCategory) {
-      toast.error("Please select a category");
-      return;
-    }
-
-    setLoading(true);
 
     const pet = {
-      name: data.petName,
-      age: Number(data.petAge),
-      category: data.petCategory.value,
-      location: data.petLocation,
-      shortDescription: data.shortDescription,
-      longDescription: data.longDescription,
+      name: values.petName,
+      email: user.email,
+      age: Number(values.petAge),
+      category: values.petCategory.value,
+      location: values.petLocation,
+      shortDescription: values.shortDescription,
+      longDescription: values.longDescription,
       imageUrl: uploadedImage,
       adopted: false,
       createdAt: new Date().toISOString(),
     };
 
+    console.log(pet);
+
     try {
-      await axios.post("/api/pets", pet);
+      await axiosSecure.post("/pets", pet);
       toast.success("Pet added successfully!");
-      reset();
+      // resetForm();
       setUploadedImage("");
-      setPreview(null);
-      if (fileRef.current) fileRef.current.value = "";
-    } catch {
-      toast.error("Failed to add pet");
-    } finally {
-      setLoading(false);
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to add pet");
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-md shadow-md">
-      <h2 className="text-xl font-bold text-teal-600 mb-4">Add a Pet</h2>
+    <div className="max-w-4xl mx-auto p-1 md:p-6 bg-white rounded-xl shadow-lg">
+      <div className="mb-8 text-center">
+        <h2 className="text-3xl font-bold text-teal-700 mb-2">
+          Add a New Pet for Adoption
+        </h2>
+        <p className="text-gray-600 text-lg">
+          Help us find a loving home for this pet
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* Image Upload */}
-        <div className="flex items-start gap-4">
-          <div className="relative">
-            {preview ? (
-              <div className="relative">
-                <img src={preview} className="h-32 w-32 object-cover rounded-md border" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUploadedImage("");
-                    setPreview(null);
-                    if (fileRef.current) fileRef.current.value = "";
-                  }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full"
-                >
-                  <X size={16} />
-                </button>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ setFieldValue, values, errors, touched }) => (
+          <Form className="space-y-8">
+            {/* Image Upload */}
+            <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-xl border border-teal-200">
+              <label className="block text-gray-700 font-medium mb-2">
+                Pet Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setImagePreview(URL.createObjectURL(file));
+                    handleImageUpload(file);
+                  }
+                }}
+                className="border border-gray-300 rounded-md p-2 w-full"
+              />
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  className="h-48 w-48 object-cover mt-4 rounded-xl border"
+                  alt="Preview"
+                />
+              )}
+            </div>
+
+            {/* Basic Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-xl border border-teal-200">
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Pet Name
+                </label>
+                <Field
+                  name="petName"
+                  className="w-full border p-2 rounded-md"
+                />
+                <ErrorMessage
+                  name="petName"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
-            ) : (
-              <div className="h-32 w-32 border-2 border-dashed rounded-md flex justify-center items-center text-teal-400">
-                <PlusCircle size={24} />
+
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Pet Age
+                </label>
+                <Field
+                  name="petAge"
+                  type="number"
+                  className="w-full border p-2 rounded-md"
+                />
+                <ErrorMessage
+                  name="petAge"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
-            )}
-          </div>
-          <div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-            />
-            <Button type="button" variant="outline" onClick={() => fileRef.current?.click()}>
-              {preview ? "Change Image" : "Upload Image"}
+
+              <div className="md:col-span-2">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Category
+                </label>
+                <Select
+                  options={petCategories}
+                  value={values.petCategory}
+                  onChange={(option) => setFieldValue("petCategory", option)}
+                />
+                {touched.petCategory && errors.petCategory && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {errors.petCategory}
+                  </div>
+                )}
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Location
+                </label>
+                <Field
+                  name="petLocation"
+                  className="w-full border p-2 rounded-md"
+                />
+                <ErrorMessage
+                  name="petLocation"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+            </div>
+
+            {/* Descriptions */}
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-xl border border-teal-200">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Short Description
+                </label>
+                <Field
+                  name="shortDescription"
+                  className="w-full border p-2 rounded-md"
+                />
+                <ErrorMessage
+                  name="shortDescription"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+
+              <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-xl border border-teal-200">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Long Description
+                </label>
+                <ReactQuill
+                  theme="snow"
+                  value={values.longDescription}
+                  onChange={(value) => setFieldValue("longDescription", value)}
+                />
+                {touched.longDescription && errors.longDescription && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {errors.longDescription}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Submit */}
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-4 text-lg font-semibold rounded-xl shadow-md"
+            >
+              List Pet for Adoption
             </Button>
-            <p className="text-sm text-gray-500 mt-1">Upload JPG or PNG</p>
-          </div>
-        </div>
-
-        {/* Form Fields */}
-        <div>
-          <Label>Pet Name</Label>
-          <Input {...register("petName", { required: "Pet name is required" })} />
-          {errors.petName && <p className="text-sm text-red-500">{errors.petName.message}</p>}
-        </div>
-
-        <div>
-          <Label>Pet Age</Label>
-          <Input type="number" {...register("petAge", {
-            required: "Age is required",
-            min: { value: 0, message: "Age can't be negative" },
-            max: { value: 30, message: "Age is too high" }
-          })} />
-          {errors.petAge && <p className="text-sm text-red-500">{errors.petAge.message}</p>}
-        </div>
-
-        <div>
-          <Label>Pet Category</Label>
-          <Select
-            options={petCategories}
-            onChange={(option) => setValue("petCategory", option)}
-            classNamePrefix="react-select"
-          />
-        </div>
-
-        <div>
-          <Label>Location</Label>
-          <Input {...register("petLocation", { required: "Location is required" })} />
-          {errors.petLocation && <p className="text-sm text-red-500">{errors.petLocation.message}</p>}
-        </div>
-
-        <div>
-          <Label>Short Description</Label>
-          <Input {...register("shortDescription", {
-            required: "Short description is required",
-            minLength: { value: 10, message: "At least 10 characters" }
-          })} />
-          {errors.shortDescription && (
-            <p className="text-sm text-red-500">{errors.shortDescription.message}</p>
-          )}
-        </div>
-
-        <div>
-          <Label>Detailed Description</Label>
-          <ReactQuill onChange={(val) => setValue("longDescription", val)} />
-          {errors.longDescription && (
-            <p className="text-sm text-red-500">{errors.longDescription.message}</p>
-          )}
-        </div>
-
-        <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white" disabled={loading}>
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <Loader2 className="animate-spin" size={18} /> Submitting...
-            </span>
-          ) : (
-            "Add Pet"
-          )}
-        </Button>
-      </form>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };
 
-export default AddPetForm;
+export default AddPetFormikForm;

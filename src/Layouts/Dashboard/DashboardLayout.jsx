@@ -221,7 +221,7 @@ const DashboardLayout = () => {
                   <AvatarImage src={user.avatar_url} />
                 ) : (
                   <AvatarFallback className="bg-teal-100 text-teal-600">
-                    {user?.full_name?.charAt(0) || "U"}
+                    <img src={user?.photoURL || "U"} alt="" />
                   </AvatarFallback>
                 )}
               </Avatar>
@@ -310,7 +310,7 @@ const DashboardLayout = () => {
                     <AvatarImage src={user.avatar_url} />
                   ) : (
                     <AvatarFallback className="bg-teal-100 text-teal-600">
-                      {user?.full_name?.charAt(0) || "U"}
+                      <img src={user?.photoURL || "U"} alt="" />
                     </AvatarFallback>
                   )}
                 </Avatar>
@@ -412,14 +412,8 @@ const DashboardLayout = () => {
         </div>
 
         {/* Main content area */}
-        <div className="flex-1 overflow-auto p-6 bg-gradient-to-b from-teal-50 to-white">
-          <div className="max-w-7xl mx-auto">
-            {/* <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-800">
-                {navItems.find((item) => item.href === location.pathname)
-                  ?.name || "Dashboard"}
-              </h1>
-            </div> */}
+        <div className="flex-1 overflow-auto p-2 md:p-6 bg-gradient-to-b from-teal-50 to-white">
+          <div className="w-full mx-auto">
             <Outlet />
           </div>
         </div>

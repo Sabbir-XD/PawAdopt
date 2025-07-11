@@ -12,6 +12,9 @@ import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
+import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
+import Swal from "sweetalert2";
+import { TableRowSkeleton } from "@/components/Loading/Loading";
 
 const columnHelper = createColumnHelper();
 
@@ -22,11 +25,12 @@ const MyAddedPets = () => {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const navigate = useNavigate();
   const {user} = UseAuth();
+  const axiosSecure = useAxiosSecure();
 
   const fetchPets = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/pets?email=${user.email}`);
+      const res = await axiosSecure.get(`/pets?email=${user.email}`);
       setPets(res.data);
     } catch (error) {
       toast.error("Failed to load pets");
@@ -40,19 +44,31 @@ const MyAddedPets = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this pet?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/pets/${id}`);
-      toast.success("Pet deleted successfully");
-      fetchPets();
-    } catch {
-      toast.error("Failed to delete pet");
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#14b8a6", // teal-500
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await axiosSecure.delete(`/pets/${id}`);
+        toast.success("Pet deleted successfully");
+        fetchPets();
+      } catch {
+        toast.error("Failed to delete pet");
+      }
     }
   };
+  
 
   const handleAdopt = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/pets/${id}/adopt`, {
+      await axiosSecure.patch(`/pets/${id}/adopt`, {
         adopted: true,
       });
       toast.success("Marked as adopted");
@@ -137,7 +153,7 @@ const MyAddedPets = () => {
     <div className="p-4 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold text-teal-700 mb-4">My Added Pets</h2>
       {loading ? (
-        <p>Loading...</p>
+        <TableRowSkeleton columns={columns.length} />
       ) : (
         <div className="overflow-x-auto rounded-xl border">
           <table className="min-w-full bg-white">

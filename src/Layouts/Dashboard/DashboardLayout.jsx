@@ -22,40 +22,10 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import { Badge } from "@/components/ui/badge";
+import { ToastContainer } from "react-toastify";
 
-const navItems = [
-  {
-    name: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Add a Pet",
-    href: "/dashboard/add-pet",
-    icon: PlusCircle,
-  },
-  {
-    name: "My Pets",
-    href: "/dashboard/my-pets",
-    icon: PawPrint,
-  },
-  {
-    name: "Adoption Requests",
-    href: "/dashboard/adoption-requests",
-    icon: HeartHandshake,
-    badge: true,
-  },
-  {
-    name: "Create Donation",
-    href: "/dashboard/create-donation",
-    icon: HandCoins,
-  },
-  {
-    name: "My Donations",
-    href: "/dashboard/my-donations",
-    icon: ListChecks,
-  },
-];
+
+
 
 const DashboardLayout = () => {
   const { user, handleLogoutUser } = UseAuth();
@@ -64,6 +34,41 @@ const DashboardLayout = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const location = useLocation();
   const navigate = useNavigate();
+
+  const navItems = [
+    {
+      name: "Dashboard",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Add a Pet",
+      href: "/dashboard/add-pet",
+      icon: PlusCircle,
+    },
+    {
+      name: "My Pets",
+      href: "/dashboard/my-pets",
+      icon: PawPrint,
+    },
+    {
+      name: "Adoption Requests",
+      href: "/dashboard/adoption-requests",
+      icon: HeartHandshake,
+      badge: true,
+    },
+    {
+      name: "Create Donation",
+      href: "/dashboard/create-donation",
+      icon: HandCoins,
+    },
+    {
+      name: "My Donations",
+      href: "/dashboard/my-donations",
+      icon: ListChecks,
+    },
+  ];
+  
 
   // Close sidebar when navigating on mobile
   useEffect(() => {
@@ -81,6 +86,7 @@ const DashboardLayout = () => {
 
   return (
     <div className="flex h-screen bg-teal-50">
+      <ToastContainer position="top-right" autoClose={1000} />
       {/* Mobile sidebar */}
       <Transition
         show={sidebarOpen}

@@ -64,3 +64,19 @@ export const TableRowSkeleton = ({ columns = 5 }) => (
     ))}
   </tr>
 );
+
+
+//from skeleton
+
+export const FromSkeleton = () => (
+  <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="p-4">
+      <Skeleton width={150} height={24} />
+      <Skeleton width={100} height={20} className="mt-2" />
+      <div className="flex justify-between mt-4">
+        <Skeleton width={80} height={32} />
+        <Skeleton width={100} height={32} />
+      </div>
+    </div>
+  </div>
+);

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
@@ -9,6 +9,8 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
+import { useParams, useNavigate } from "react-router";
+import { FromSkeleton } from "@/components/Loading/Loading";
 
 const petCategories = [
   { value: "dog", label: "🐕 Dog" },
@@ -21,21 +23,32 @@ const petCategories = [
   { value: "other", label: "🐾 Other" },
 ];
 
-const AddPetForm = () => {
+const UpdatePetForm = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadedImage, setUploadedImage] = useState("");
+  const [initialData, setInitialData] = useState(null);
   const fileInputRef = useRef(null);
   const axiosSecure = useAxiosSecure();
   const { user } = UseAuth();
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const initialValues = {
-    petName: "",
-    petAge: "",
-    petCategory: null,
-    petLocation: "",
-    shortDescription: "",
-    longDescription: "",
-  };
+  useEffect(() => {
+    axiosSecure.get(`/pets/${id}`).then((res) => {
+      const pet = res.data;
+      console.log(pet);
+      setInitialData({
+        petName: pet.name,
+        petAge: pet.age,
+        petCategory: petCategories.find((c) => c.value === pet.category),
+        petLocation: pet.location,
+        shortDescription: pet.shortDescription,
+        longDescription: pet.longDescription,
+      });
+      setUploadedImage(pet.imageUrl);
+      setImagePreview(pet.imageUrl);
+    });
+  }, [axiosSecure, id]);
 
   const validationSchema = Yup.object({
     petName: Yup.string().required("Pet name is required"),
@@ -67,13 +80,13 @@ const AddPetForm = () => {
     }
   };
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const handleSubmit = async (values) => {
     if (!uploadedImage) {
       toast.error("Please upload an image first");
       return;
     }
 
-    const pet = {
+    const updatedPet = {
       name: values.petName,
       email: user.email,
       age: Number(values.petAge),
@@ -82,43 +95,37 @@ const AddPetForm = () => {
       shortDescription: values.shortDescription,
       longDescription: values.longDescription,
       imageUrl: uploadedImage,
-      adopted: false,
-      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
-    console.log(pet);
-
     try {
-      await axiosSecure
-        .post("/pets", pet)
-        .then((res) => {
-          console.log(res.data);
-          toast.success("Pet added successfully!");
-        })
-        .catch((error) => console.log(error));
-
-      // resetForm();
-      setUploadedImage("");
-      setImagePreview(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      await axiosSecure.patch(`/pets/${id}`, updatedPet);
+      toast.success("Pet updated successfully!");
+      navigate("/dashboard/my-pets"); // or any other route
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to add pet");
+      console.log(error);
+      toast.error("Failed to update pet");
     }
   };
+
+  if (!initialData)
+    return (
+      <div className="text-center">
+        <FromSkeleton />
+      </div>
+    );
 
   return (
     <div className="max-w-4xl mx-auto p-1 md:p-6 bg-white rounded-xl shadow-lg">
       <div className="mb-8 text-center">
         <h2 className="text-3xl font-bold text-teal-700 mb-2">
-          Add a New Pet for Adoption
+          Update Pet Information
         </h2>
-        <p className="text-gray-600 text-lg">
-          Help us find a loving home for this pet
-        </p>
+        <p className="text-gray-600 text-lg">Modify your pet's details below</p>
       </div>
 
       <Formik
-        initialValues={initialValues}
+        initialValues={initialData}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
@@ -253,9 +260,9 @@ const AddPetForm = () => {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-4 text-lg font-semibold rounded-xl shadow-md"
+              className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white py-4 text-lg font-semibold rounded-xl shadow-md"
             >
-              List Pet for Adoption
+              Update Pet Info
             </Button>
           </Form>
         )}
@@ -264,4 +271,4 @@ const AddPetForm = () => {
   );
 };
 
-export default AddPetForm;
+export default UpdatePetForm;

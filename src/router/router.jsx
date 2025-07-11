@@ -8,6 +8,11 @@ import Dashboard from "@/pages/Dashboard/Dashboard/Dashboard";
 import AddPetForm from "@/pages/Dashboard/AddPetForm/AddPetForm";
 import PrivetRoute from "@/Routes/PrivetRoutes/PrivetRoutes";
 import MyAddedPets from "@/pages/Dashboard/MyAddedPets/MyAddedPets";
+import { TableRowSkeleton } from "@/components/Loading/Loading";
+import UpdatePetForm from "@/pages/Dashboard/UpdatePetForm/UpdatePetForm";
+import CreateDonationCampaign from "@/pages/Dashboard/CreateDonationCampaign/CreateDonationCampaign";
+import MyDonationCampaigns from "@/pages/Dashboard/MyDonationCampaigns/MyDonationCampaigns";
+import EditDonationCampaign from "@/pages/Dashboard/EditDonationCampaign/EditDonationCampaign";
 
 export const router = createBrowserRouter([
   {
@@ -47,8 +52,40 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/my-pets",
         element: (
-          <PrivetRoute>
+          <PrivetRoute skeleton={<TableRowSkeleton count={5} />}>
             <MyAddedPets />
+          </PrivetRoute>
+        ),
+      },
+      {
+        path: "/dashboard/update-pet/:id",
+        element: (
+          <PrivetRoute>
+            <UpdatePetForm />
+          </PrivetRoute>
+        ),
+      },
+      {
+        path: "/dashboard/create-donation",
+        element: (
+          <PrivetRoute>
+            <CreateDonationCampaign />
+          </PrivetRoute>
+        ),
+      },
+      {
+        path: "/dashboard/my-donations",
+        element: (
+          <PrivetRoute>
+            <MyDonationCampaigns />
+          </PrivetRoute>
+        ),
+      },
+      {
+        path: "/dashboard/edit-donation/:id",
+        element: (
+          <PrivetRoute>
+            <EditDonationCampaign />
           </PrivetRoute>
         ),
       },

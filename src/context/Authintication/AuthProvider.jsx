@@ -48,13 +48,13 @@ const AuthProvider = ({ children }) => {
       })
       .catch((error) => {
         console.error("Error signing out:", error);
-        toast.error("Error signing out:", error);
+        toast.error("Error signing out:", error.message);
+        setLoading(false);
       });
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      // console.log(currentUser);
       setUser(currentUser);
       setLoading(false);
     });
@@ -72,7 +72,12 @@ const AuthProvider = ({ children }) => {
     handleGoogleLoginUser,
     handleLogoutUser,
   };
-  return <AuthContext value={userInfo}>{children}</AuthContext>;
+
+  return (
+    <AuthContext.Provider value={userInfo}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

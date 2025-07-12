@@ -1,22 +1,23 @@
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
+
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
+import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import { Button } from "@/components/ui/button";
 
 const CreateDonationCampaign = () => {
-  const [imagePreview, setImagePreview] = useState(null);
-  const [uploadedImage, setUploadedImage] = useState("");
   const fileInputRef = useRef(null);
-  const axiosSecure = useAxiosSecure();
+  const [imagePreview, setImagePreview] = useState(null);
   const { user } = UseAuth();
+  const axiosSecure = useAxiosSecure();
 
   const initialValues = {
+    petName: "",
     maxDonation: "",
     deadline: "",
     shortDescription: "",
@@ -26,10 +27,10 @@ const CreateDonationCampaign = () => {
   const validationSchema = Yup.object({
     petName: Yup.string().required("Pet name is required"),
     maxDonation: Yup.number()
-      .required("Maximum donation amount is required")
+      .required("Max donation is required")
       .min(1, "Must be at least 1"),
     deadline: Yup.date()
-      .required("Last donation date is required")
+      .required("Deadline is required")
       .min(new Date(), "Date must be in the future"),
     shortDescription: Yup.string()
       .max(100, "Max 100 characters")
@@ -37,7 +38,8 @@ const CreateDonationCampaign = () => {
     longDescription: Yup.string().required("Long description is required"),
   });
 
-  const handleImageUpload = async (file) => {
+  // Upload image to Cloudinary
+  const uploadImageToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "petcare");
@@ -47,43 +49,46 @@ const CreateDonationCampaign = () => {
         "https://api.cloudinary.com/v1_1/ddgcar30i/image/upload",
         formData
       );
-      setUploadedImage(res.data.secure_url);
-      toast.success("Image uploaded successfully");
+      return res.data.secure_url;
     } catch (error) {
-      console.log(error);
       toast.error("Image upload failed");
+      throw new Error("Image upload failed");
     }
   };
 
-  const handleSubmit = async (values, { resetForm }) => {
-    if (!uploadedImage) {
-      toast.error("Please upload a pet image first");
+  const handleSubmit = async (values, { resetForm, setSubmitting }) => {
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) {
+      toast.error("Please select an image");
       return;
     }
 
-    const campaign = {
-      petName: values.petName,
-      createdBy: user?.email,
-      imageUrl: uploadedImage,
-      maxDonationAmount: Number(values.maxDonation),
-      deadline: values.deadline,
-      shortDescription: values.shortDescription,
-      longDescription: values.longDescription,
-      createdAt: new Date().toISOString(),
-    };
-
     try {
+      toast.info("Uploading image...");
+      const imageUrl = await uploadImageToCloudinary(file);
+
+      const campaign = {
+        petName: values.petName,
+        createdBy: user?.email,
+        imageUrl,
+        maxDonationAmount: Number(values.maxDonation),
+        deadline: values.deadline,
+        shortDescription: values.shortDescription,
+        longDescription: values.longDescription,
+        createdAt: new Date().toISOString(),
+      };
+
       const res = await axiosSecure.post("/donations-campaigns", campaign);
       if (res.data.insertedId) {
-        toast.success("Donation campaign created!");
+        toast.success("Campaign created!");
         resetForm();
-        setUploadedImage("");
         setImagePreview(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
+        fileInputRef.current.value = "";
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
       toast.error("Failed to create campaign");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -98,7 +103,7 @@ const CreateDonationCampaign = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ setFieldValue, values, touched, errors }) => (
+        {({ setFieldValue, values, touched, errors, isSubmitting }) => (
           <Form className="space-y-6">
             {/* Pet Image Upload */}
             <div>
@@ -113,7 +118,6 @@ const CreateDonationCampaign = () => {
                   const file = e.target.files[0];
                   if (file) {
                     setImagePreview(URL.createObjectURL(file));
-                    handleImageUpload(file);
                   }
                 }}
                 className="w-full border p-2 rounded-md"
@@ -127,11 +131,15 @@ const CreateDonationCampaign = () => {
               )}
             </div>
 
+            {/* Pet Name */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">
                 Pet Name
               </label>
-              <Field name="petName" className="w-full border p-2 rounded-md" />
+              <Field
+                name="petName"
+                className="w-full border p-2 rounded-md"
+              />
               <ErrorMessage
                 name="petName"
                 component="div"
@@ -197,7 +205,7 @@ const CreateDonationCampaign = () => {
               <ReactQuill
                 theme="snow"
                 value={values.longDescription}
-                onChange={(value) => setFieldValue("longDescription", value)}
+                onChange={(val) => setFieldValue("longDescription", val)}
               />
               {touched.longDescription && errors.longDescription && (
                 <div className="text-red-500 text-sm mt-1">
@@ -209,9 +217,10 @@ const CreateDonationCampaign = () => {
             {/* Submit */}
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white py-3 text-lg font-semibold rounded-xl shadow-md"
             >
-              Create Campaign
+              {isSubmitting ? "Creating..." : "Create Campaign"}
             </Button>
           </Form>
         )}

@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -7,41 +6,65 @@ import {
   flexRender,
   createColumnHelper,
 } from "@tanstack/react-table";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { Button } from "@/components/ui/button";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
-import Swal from "sweetalert2";
+import { Button } from "@/components/ui/button";
 import { TableRowSkeleton } from "@/components/Loading/Loading";
 
 const columnHelper = createColumnHelper();
 
 const MyAddedPets = () => {
-  const [pets, setPets] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { user } = UseAuth();
+  const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure();
+  const queryClient = useQueryClient();
+
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const navigate = useNavigate();
-  const {user} = UseAuth();
-  const axiosSecure = useAxiosSecure();
 
-  const fetchPets = async () => {
-    try {
-      setLoading(true);
+  // Fetch pets with useQuery
+  const {
+    data: pets = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["myPets", user?.email],
+    queryFn: async () => {
       const res = await axiosSecure.get(`/pets?email=${user.email}`);
-      setPets(res.data);
-    } catch (error) {
-      toast.error("Failed to load pets");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return res.data;
+    },
+    enabled: !!user?.email,
+  });
 
-  useEffect(() => {
-    fetchPets();
-  }, []);
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id) => {
+      await axiosSecure.delete(`/pets/${id}`);
+    },
+    onSuccess: () => {
+      toast.success("Pet deleted successfully");
+      queryClient.invalidateQueries(["myPets", user?.email]);
+    },
+    onError: () => toast.error("Failed to delete pet"),
+  });
+
+  // Adopt mutation
+  const adoptMutation = useMutation({
+    mutationFn: async (id) => {
+      await axiosSecure.patch(`/pets/${id}/adopt`);
+    },
+    onSuccess: () => {
+      toast.success("Marked as adopted");
+      queryClient.invalidateQueries(["myPets", user?.email]);
+    },
+    onError: () => toast.error("Failed to mark as adopted"),
+  });
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
@@ -49,33 +72,18 @@ const MyAddedPets = () => {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#14b8a6", // teal-500
+      confirmButtonColor: "#14b8a6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     });
-  
+
     if (result.isConfirmed) {
-      try {
-        await axiosSecure.delete(`/pets/${id}`);
-        toast.success("Pet deleted successfully");
-        fetchPets();
-      } catch {
-        toast.error("Failed to delete pet");
-      }
+      deleteMutation.mutate(id);
     }
   };
-  
 
-  const handleAdopt = async (id) => {
-    try {
-      await axiosSecure.patch(`/pets/${id}/adopt`, {
-        adopted: true,
-      });
-      toast.success("Marked as adopted");
-      fetchPets();
-    } catch {
-      toast.error("Failed to update adoption status");
-    }
+  const handleAdopt = (id) => {
+    adoptMutation.mutate(id);
   };
 
   const columns = useMemo(
@@ -96,7 +104,11 @@ const MyAddedPets = () => {
       columnHelper.accessor("imageUrl", {
         header: "Image",
         cell: (info) => (
-          <img src={info.getValue()} alt="pet" className="h-12 w-12 rounded object-cover" />
+          <img
+            src={info.getValue()}
+            alt="pet"
+            className="h-12 w-12 rounded object-cover"
+          />
         ),
       }),
       columnHelper.accessor("adopted", {
@@ -104,7 +116,9 @@ const MyAddedPets = () => {
         cell: (info) => (
           <span
             className={`px-2 py-1 rounded text-xs font-semibold ${
-              info.getValue() ? "bg-green-200 text-green-800" : "bg-yellow-200 text-yellow-800"
+              info.getValue()
+                ? "bg-green-200 text-green-800"
+                : "bg-yellow-200 text-yellow-800"
             }`}
           >
             {info.getValue() ? "Adopted" : "Not Adopted"}
@@ -116,14 +130,27 @@ const MyAddedPets = () => {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex gap-2">
-            <Button size="sm" onClick={() => navigate(`/dashboard/update-pet/${row.original._id}`)}>
+            <Button
+              size="sm"
+              onClick={() =>
+                navigate(`/dashboard/update-pet/${row.original._id}`)
+              }
+            >
               Update
             </Button>
-            <Button size="sm" variant="destructive" onClick={() => handleDelete(row.original._id)}>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => handleDelete(row.original._id)}
+            >
               Delete
             </Button>
             {!row.original.adopted && (
-              <Button size="sm" variant="outline" onClick={() => handleAdopt(row.original._id)}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleAdopt(row.original._id)}
+              >
                 Mark Adopted
               </Button>
             )}
@@ -146,14 +173,16 @@ const MyAddedPets = () => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: false,
   });
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold text-teal-700 mb-4">My Added Pets</h2>
-      {loading ? (
+
+      {isLoading ? (
         <TableRowSkeleton columns={columns.length} />
+      ) : isError ? (
+        <p className="text-red-500">Failed to load pets</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border">
           <table className="min-w-full bg-white">
@@ -166,7 +195,10 @@ const MyAddedPets = () => {
                       onClick={header.column.getToggleSortingHandler()}
                       className="px-4 py-2 text-left text-sm font-semibold text-teal-700 cursor-pointer hover:bg-teal-50"
                     >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                     </th>
                   ))}
                 </tr>
@@ -177,7 +209,10 @@ const MyAddedPets = () => {
                 <tr key={row.id} className="border-t">
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-4 py-2 text-sm">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </td>
                   ))}
                 </tr>
@@ -199,7 +234,8 @@ const MyAddedPets = () => {
             Previous
           </Button>
           <span className="text-sm px-2 py-1">
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
           </span>
           <Button
             variant="outline"

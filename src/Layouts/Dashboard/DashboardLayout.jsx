@@ -24,7 +24,44 @@ import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import { Badge } from "@/components/ui/badge";
 import { ToastContainer } from "react-toastify";
 
-
+const navItems = [
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    name: "Add a Pet",
+    href: "/dashboard/add-pet",
+    icon: PlusCircle,
+  },
+  {
+    name: "My Pets",
+    href: "/dashboard/my-pets",
+    icon: PawPrint,
+  },
+  {
+    name: "Adoption Requests",
+    href: "/dashboard/adoption-requests",
+    icon: HeartHandshake,
+    badge: true,
+  },
+  {
+    name: "Create Donation",
+    href: "/dashboard/create-donation",
+    icon: HandCoins,
+  },
+  {
+    name: "My Donations",
+    href: "/dashboard/my-donations",
+    icon: ListChecks,
+  },
+  {
+    name: "Profile",
+    href: "/dashboard/profile",
+    icon: User,
+  }
+];
 
 
 const DashboardLayout = () => {
@@ -35,41 +72,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const navItems = [
-    {
-      name: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "Add a Pet",
-      href: "/dashboard/add-pet",
-      icon: PlusCircle,
-    },
-    {
-      name: "My Pets",
-      href: "/dashboard/my-pets",
-      icon: PawPrint,
-    },
-    {
-      name: "Adoption Requests",
-      href: "/dashboard/adoption-requests",
-      icon: HeartHandshake,
-      badge: true,
-    },
-    {
-      name: "Create Donation",
-      href: "/dashboard/create-donation",
-      icon: HandCoins,
-    },
-    {
-      name: "My Donations",
-      href: "/dashboard/my-donations",
-      icon: ListChecks,
-    },
-  ];
-  
-
+ 
   // Close sidebar when navigating on mobile
   useEffect(() => {
     if (isMobile) {

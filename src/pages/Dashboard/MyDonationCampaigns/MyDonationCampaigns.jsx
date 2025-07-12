@@ -1,69 +1,75 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import Modal from "@/components/ui/Modal"; // make sure this exists
+import Modal from "@/components/ui/Modal";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const MyDonationCampaigns = () => {
-  const [campaigns, setCampaigns] = useState([]);
   const [selectedDonators, setSelectedDonators] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const axiosSecure = useAxiosSecure();
   const { user } = UseAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-
+  // Fetch campaigns
   const {
-    data: donationCampaigns = [],
-    refetch: fetchCampaigns,
+    data: campaigns = [],
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["donationCampaigns", axiosSecure.get(`/donations-campaigns?email=${user.email}`)],
-    queryFn: () => (user?.email),
+    queryKey: ["donation-campaigns", user?.email],
+    queryFn: async () => {
+      const res = await axiosSecure.get(
+        `/donations-campaigns?email=${user.email}`
+      );
+      return res.data;
+    },
     enabled: !!user?.email,
   });
 
-  if(isLoading) {
-    return <div>Loading...</div>
-  }
+  console.log(campaigns);
 
-//   const fetchCampaigns = async () => {
-//     try {
-//       const res = await axiosSecure.get(`/donations-campaigns?email=${user.email}`);
-//       setCampaigns(res.data);
-//     } catch {
-//       toast.error("Failed to load donation campaigns");
-//     }
-//   };
-
-  useEffect(() => {
-    fetchCampaigns();
-  }, []);
-
-  const togglePause = async (id, currentStatus) => {
-    try {
+  // Mutation for toggling pause/resume
+  const pauseMutation = useMutation({
+    mutationFn: async ({ id, currentStatus }) => {
       await axiosSecure.patch(`/donations-campaigns/${id}/pause`, {
         paused: !currentStatus,
       });
-      toast.success(`Campaign ${!currentStatus ? "paused" : "resumed"}`);
-      fetchCampaigns();
-    } catch {
-      toast.error("Failed to update pause status");
-    }
+    },
+    onSuccess: () => {
+      toast.success("Campaign status updated");
+      queryClient.invalidateQueries(["donation-campaigns", user?.email]);
+    },
+    onError: () => {
+      toast.error("Failed to update status");
+    },
+  });
+
+  const togglePause = (id, currentStatus) => {
+    pauseMutation.mutate({ id, currentStatus });
   };
 
+  // Load Donators
   const viewDonators = async (id) => {
     try {
       const res = await axiosSecure.get(`/donations-campaigns/${id}/donators`);
-      setSelectedDonators(res.data);
+      setSelectedDonators(res.data || []);
       setModalOpen(true);
     } catch {
       toast.error("Failed to load donators");
     }
   };
+
+  if (isLoading)
+    return <div className="text-center text-gray-600">Loading...</div>;
+  if (isError)
+    return (
+      <div className="text-center text-red-500">Failed to load campaigns</div>
+    );
 
   return (
     <div className="max-w-6xl mx-auto p-4">
@@ -77,6 +83,7 @@ const MyDonationCampaigns = () => {
             <tr className="bg-emerald-100 text-emerald-700">
               <th className="p-3 text-left">Pet Name</th>
               <th className="p-3 text-left">Max Donation</th>
+              <th className="p-3 text-left">Image</th>
               <th className="p-3 text-left">Progress</th>
               <th className="p-3 text-left">Actions</th>
             </tr>
@@ -90,8 +97,17 @@ const MyDonationCampaigns = () => {
 
               return (
                 <tr key={campaign._id} className="border-t">
-                  <td className="p-3 font-medium">{campaign.petName || "N/A"}</td>
+                  <td className="p-3 font-medium">
+                    {campaign.petName || "N/A"}
+                  </td>
                   <td className="p-3">${campaign.maxDonationAmount}</td>
+                  <td className="p-3">
+                    <img
+                      src={campaign?.imageUrl}
+                      alt="pet"
+                      className="h-12 w-12 rounded object-cover"
+                    />
+                  </td>
                   <td className="p-3">
                     <div className="w-full bg-gray-200 rounded h-4">
                       <div
@@ -100,7 +116,7 @@ const MyDonationCampaigns = () => {
                       />
                     </div>
                     <div className="text-sm text-gray-600 mt-1">
-                      ${campaign.totalDonated} raised
+                      ${campaign.totalDonated || 0} raised
                     </div>
                   </td>
                   <td className="p-3 space-x-2">
@@ -114,7 +130,9 @@ const MyDonationCampaigns = () => {
                     </Button>
 
                     <Button
-                      onClick={() => navigate(`/dashboard/edit-donation/${campaign._id}`)}
+                      onClick={() =>
+                        navigate(`/dashboard/edit-donation/${campaign._id}`)
+                      }
                       className="bg-blue-500 text-white px-3 py-1 text-sm rounded"
                     >
                       Edit

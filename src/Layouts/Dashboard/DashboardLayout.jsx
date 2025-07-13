@@ -23,44 +23,24 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import { Badge } from "@/components/ui/badge";
 import { ToastContainer } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
+import { CardSkeleton } from "@/components/Loading/Loading";
 
-const navItems = [
-  {
-    name: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Add a Pet",
-    href: "/dashboard/add-pet",
-    icon: PlusCircle,
-  },
-  {
-    name: "My Pets",
-    href: "/dashboard/my-pets",
-    icon: PawPrint,
-  },
-  {
-    name: "Adoption Requests",
-    href: "/dashboard/adoption-requests",
-    icon: HeartHandshake,
-    badge: true,
-  },
-  {
-    name: "Create Donation",
-    href: "/dashboard/create-donation",
-    icon: HandCoins,
-  },
-  {
-    name: "My Donations",
-    href: "/dashboard/my-donations",
-    icon: ListChecks,
-  },
-  {
-    name: "Profile",
-    href: "/dashboard/profile",
-    icon: User,
-  }
+
+const userNavItems = [
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Add a Pet", href: "/dashboard/add-pet", icon: PlusCircle },
+  { name: "My Pets", href: "/dashboard/my-pets", icon: PawPrint },
+  { name: "Adoption Requests", href: "/dashboard/adoption-requests", icon: HeartHandshake, badge: true },
+  { name: "Create Donation", href: "/dashboard/create-donation", icon: HandCoins },
+  { name: "My Donations", href: "/dashboard/my-donations", icon: ListChecks },
+];
+
+const adminExtraItems = [
+  { name: "All Users", href: "/dashboard/all-users", icon: User },
+  { name: "Manage Pets", href: "/dashboard/manage-pets", icon: PawPrint },
+  { name: "Manage Donations", href: "/dashboard/manage-donations", icon: HandCoins },
 ];
 
 
@@ -71,22 +51,43 @@ const DashboardLayout = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const location = useLocation();
   const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure();
+
+
+ // Close sidebar when navigating on mobile
+ useEffect(() => {
+  if (isMobile) {
+    setSidebarOpen(false);
+  }
+}, [location, isMobile]);
+
+// Close sidebar when resizing to desktop
+useEffect(() => {
+  if (!isMobile) {
+    setSidebarOpen(false);
+  }
+}, [isMobile]);
+
+
+  const { data: dbUser = {}, isLoading } = useQuery({
+    enabled: !!user?.email,
+    queryKey: ["dashboardUser", user?.email],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/users/${user.email}`);
+      return res.data;
+    },
+  });
+
+  if (isLoading) {
+    return <CardSkeleton count={1} />;
+  }
+
+  const combinedNavItems =
+    dbUser?.role === "admin"
+      ? [...userNavItems, ...adminExtraItems]
+      : userNavItems;
 
  
-  // Close sidebar when navigating on mobile
-  useEffect(() => {
-    if (isMobile) {
-      setSidebarOpen(false);
-    }
-  }, [location, isMobile]);
-
-  // Close sidebar when resizing to desktop
-  useEffect(() => {
-    if (!isMobile) {
-      setSidebarOpen(false);
-    }
-  }, [isMobile]);
-
   return (
     <div className="flex h-screen bg-teal-50">
       <ToastContainer position="top-right" autoClose={1000} />
@@ -118,7 +119,7 @@ const DashboardLayout = () => {
           </div>
           <div className="flex-1 overflow-y-auto">
             <nav className="px-2 py-4 space-y-1">
-              {navItems.map((item) => (
+              {combinedNavItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
@@ -194,7 +195,7 @@ const DashboardLayout = () => {
           </div>
           <div className="flex-1 overflow-y-auto">
             <nav className="px-2 py-4 space-y-2">
-              {navItems.map((item) => (
+              {combinedNavItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
@@ -280,7 +281,7 @@ const DashboardLayout = () => {
             </Link>
             <span className="text-gray-400">/</span>
             <span className="text-gray-600">
-              {navItems.find((item) => item.href === location.pathname)?.name ||
+              {combinedNavItems.find((item) => item.href === location.pathname)?.name ||
                 "Dashboard"}
             </span>
           </div>

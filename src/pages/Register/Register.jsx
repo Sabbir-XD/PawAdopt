@@ -27,10 +27,11 @@ import SocialLogin from "@/components/SocialLogin/SocialLogin";
 import { toast } from "react-toastify";
 import axios from "axios";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
+import { FromSkeleton } from "@/components/Loading/Loading";
 
 const Register = () => {
   const [imagePreview, setImagePreview] = useState(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { handleCreateUser, handleUpdateProfile, setUser } = UseAuth();
@@ -45,86 +46,73 @@ const Register = () => {
     reset,
   } = useForm();
 
-  // ✅ Cloudinary Upload
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setImagePreview(URL.createObjectURL(file));
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "petcare");
-
-    try {
-      const { data } = await axios.post(
-        "https://api.cloudinary.com/v1_1/ddgcar30i/image/upload",
-        formData
-      );
-      setUploadedImageUrl(data.secure_url);
-      toast.success("Image uploaded successfully!");
-    } catch (error) {
-      console.error("Cloudinary Upload Error:", error);
-      toast.error("Image upload failed.");
-    }
-  };
-
   const onSubmit = async (data) => {
-    if (!uploadedImageUrl) {
+    if (!imageFile) {
       toast.error("Please upload your profile image first.");
       return;
     }
 
     setLoading(true);
+
     try {
-      await handleCreateUser(data.email, data.password)
-        .then((result) => {
-          const user = result.user;
-          handleUpdateProfile({
-            displayName: data.name,
-            photoURL: uploadedImageUrl,
-          });
-          setUser({
-            ...user,
-            displayName: data.name,
-            photoURL: uploadedImageUrl,
-          });
+      // ✅ Upload image to Cloudinary
+      const formData = new FormData();
+      formData.append("file", imageFile);
+      formData.append("upload_preset", "petcare");
 
-          const payload = {
-            name: data.name,
-            email: data.email,
-            role: "user",
-            photoURL: uploadedImageUrl,
-            uid: user.uid,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
+      const cloudRes = await axios.post(
+        "https://api.cloudinary.com/v1_1/ddgcar30i/image/upload",
+        formData
+      );
 
-          axiosSecure
-            .post("/users", payload)
-            .then((response) => {
-              console.log("User created successfully:", response.data);
-            })
-            .catch((error) => {
-              console.error("Error creating user:", error);
-            });
+      const imageUrl = cloudRes.data.secure_url;
 
-          toast.success("Registration Successful!");
-          navigate(location?.state || "/");
-        })
-        .catch((error) => {
-          console.error("Error creating user:", error);
-          toast.error("Registration failed.");
-        });
+      const result = await handleCreateUser(data.email, data.password);
+      const user = result.user;
 
+      await handleUpdateProfile({
+        displayName: data.name,
+        photoURL: imageUrl,
+      });
+
+      setUser({
+        ...user,
+        displayName: data.name,
+        photoURL: imageUrl,
+      });
+
+      // ✅ Save user to database
+      const payload = {
+        name: data.name,
+        email: data.email,
+        role: "user",
+        photoURL: imageUrl,
+        uid: user.uid,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      await axiosSecure.post("/users", payload);
+
+      toast.success("Registration Successful!");
       reset();
       setImagePreview(null);
-      setUploadedImageUrl("");
+      setImageFile(null);
+      navigate(location?.state || "/");
     } catch (error) {
       console.error("Registration Error:", error);
+      toast.error("Registration failed.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
   };
 
   return (
@@ -147,7 +135,7 @@ const Register = () => {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="p-6">
-              {/* Profile Image Upload */}
+              {/* Image Upload */}
               <div className="flex flex-col items-center mb-4">
                 <div className="relative group">
                   <Avatar className="w-24 h-24 border-4 border-teal-100">
@@ -167,16 +155,12 @@ const Register = () => {
                     <input
                       type="file"
                       accept="image/*"
-                      {...register("photo", { required: true })}
                       onChange={handleImageChange}
                       className="file-input hidden"
                     />
                   </label>
                 </div>
                 <p className="text-sm text-teal-600 mt-2">Add profile photo</p>
-                {errors.photo && (
-                  <p className="text-sm text-red-500">Image is required</p>
-                )}
               </div>
 
               {/* Full Name */}
@@ -238,9 +222,18 @@ const Register = () => {
                     className="pl-9 pr-10 mt-1 border-teal-300"
                     {...register("password", {
                       required: "Password is required",
-                      minLength: {
-                        value: 6,
-                        message: "Minimum 6 characters required",
+                      validate: {
+                        minLength: (v) =>
+                          v.length >= 6 ||
+                          "Password must be at least 6 characters",
+                        hasUpper: (v) =>
+                          /[A-Z]/.test(v) ||
+                          "Must include at least 1 uppercase letter",
+                        hasLower: (v) =>
+                          /[a-z]/.test(v) ||
+                          "Must include at least 1 lowercase letter",
+                        hasNumber: (v) =>
+                          /\d/.test(v) || "Must include at least 1 number",
                       },
                     })}
                   />
@@ -262,10 +255,10 @@ const Register = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={loading || !uploadedImageUrl}
+                disabled={loading}
                 className="w-full bg-teal-600 hover:bg-teal-700 mt-6"
               >
-                {loading ? "Registering..." : "Register"}
+                {loading ? <FromSkeleton count={1} /> : "Register"}
               </Button>
 
               {/* Divider */}

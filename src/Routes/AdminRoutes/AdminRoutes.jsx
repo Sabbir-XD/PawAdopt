@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
@@ -49,7 +49,7 @@ const AdminRoutes = ({ children }) => {
 
   // Not an admin
   if (dbUser?.role !== "admin") {
-    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+    return <Navigate to="/dashboard/user" state={{ from: location }} replace />;
   }
 
   // Is admin

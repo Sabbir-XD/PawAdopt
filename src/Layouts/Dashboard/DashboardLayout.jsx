@@ -27,22 +27,33 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import { CardSkeleton } from "@/components/Loading/Loading";
 
-
 const userNavItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Add a Pet", href: "/dashboard/add-pet", icon: PlusCircle },
   { name: "My Pets", href: "/dashboard/my-pets", icon: PawPrint },
-  { name: "Adoption Requests", href: "/dashboard/adoption-requests", icon: HeartHandshake, badge: true },
-  { name: "Create Donation", href: "/dashboard/create-donation", icon: HandCoins },
+  {
+    name: "Adoption Requests",
+    href: "/dashboard/adoption-requests",
+    icon: HeartHandshake,
+    badge: true,
+  },
+  {
+    name: "Create Donation",
+    href: "/dashboard/create-donation",
+    icon: HandCoins,
+  },
   { name: "My Donations", href: "/dashboard/my-donations", icon: ListChecks },
 ];
 
 const adminExtraItems = [
   { name: "All Users", href: "/dashboard/all-users", icon: User },
   { name: "Manage Pets", href: "/dashboard/manage-pets", icon: PawPrint },
-  { name: "Manage Donations", href: "/dashboard/manage-donations", icon: HandCoins },
+  {
+    name: "Manage Donations",
+    href: "/dashboard/manage-donations",
+    icon: HandCoins,
+  },
 ];
-
 
 const DashboardLayout = () => {
   const { user, handleLogoutUser } = UseAuth();
@@ -53,21 +64,19 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
 
+  // Close sidebar when navigating on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [location, isMobile]);
 
- // Close sidebar when navigating on mobile
- useEffect(() => {
-  if (isMobile) {
-    setSidebarOpen(false);
-  }
-}, [location, isMobile]);
-
-// Close sidebar when resizing to desktop
-useEffect(() => {
-  if (!isMobile) {
-    setSidebarOpen(false);
-  }
-}, [isMobile]);
-
+  // Close sidebar when resizing to desktop
+  useEffect(() => {
+    if (!isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [isMobile]);
 
   const { data: dbUser = {}, isLoading } = useQuery({
     enabled: !!user?.email,
@@ -87,7 +96,6 @@ useEffect(() => {
       ? [...userNavItems, ...adminExtraItems]
       : userNavItems;
 
- 
   return (
     <div className="flex h-screen bg-teal-50">
       <ToastContainer position="top-right" autoClose={1000} />
@@ -104,7 +112,7 @@ useEffect(() => {
       >
         <div className="flex flex-col w-64 border-r bg-white shadow-xl">
           <div className="flex items-center justify-between h-16 px-4 border-b">
-            <Link to="/dashboard" className="flex items-center space-x-2">
+            <Link to="/" className="flex items-center space-x-2">
               <PawPrint className="h-6 w-6 text-teal-600" />
               <span className="text-xl font-bold text-teal-600">PetAdopt</span>
             </Link>
@@ -231,16 +239,16 @@ useEffect(() => {
                   <AvatarImage src={user.avatar_url} />
                 ) : (
                   <AvatarFallback className="bg-teal-100 text-teal-600">
-                    <img src={user?.photoURL || "U"} alt="" />
+                    <img src={dbUser?.photoURL || "U"} alt="" />
                   </AvatarFallback>
                 )}
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.full_name || "User"}
+                  {dbUser?.name || "User"}
                 </p>
                 <p className="text-xs text-teal-600 truncate">
-                  {user?.email || "user@example.com"}
+                  {dbUser?.email || "user@example.com"}
                 </p>
               </div>
               <Button
@@ -281,8 +289,8 @@ useEffect(() => {
             </Link>
             <span className="text-gray-400">/</span>
             <span className="text-gray-600">
-              {combinedNavItems.find((item) => item.href === location.pathname)?.name ||
-                "Dashboard"}
+              {combinedNavItems.find((item) => item.href === location.pathname)
+                ?.name || "Dashboard"}
             </span>
           </div>
 
@@ -320,17 +328,17 @@ useEffect(() => {
                     <AvatarImage src={user.avatar_url} />
                   ) : (
                     <AvatarFallback className="bg-teal-100 text-teal-600">
-                      <img src={user?.photoURL || "U"} alt="" />
+                      <img src={dbUser?.photoURL || "U"} alt="" />
                     </AvatarFallback>
                   )}
                 </Avatar>
                 {!isMobile && (
                   <div className="text-left">
                     <p className="text-sm font-medium text-gray-700">
-                      {user?.full_name || "User"}
+                      {dbUser?.name || "User"}
                     </p>
                     <p className="text-xs text-teal-600">
-                      {user?.role || "Member"}
+                      {dbUser?.role || "Member"}
                     </p>
                   </div>
                 )}

@@ -129,6 +129,7 @@ const MyAddedPets = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
+          console.log(row),
           <div className="flex gap-2">
             <Button
               size="sm"

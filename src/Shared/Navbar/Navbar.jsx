@@ -38,7 +38,7 @@ const Navbar = () => {
 
   const links = [
     { name: "Home", to: "/", icon: <FaHome className="mr-2" /> },
-    { name: "Pet Listing", to: "/pets", icon: <FaDog className="mr-2" /> },
+    { name: "Pet Listing", to: "/pet-listing", icon: <FaDog className="mr-2" /> },
     {
       name: "Donation Campaigns",
       to: "/donate",

@@ -16,6 +16,7 @@ import EditDonationCampaign from "@/pages/Dashboard/EditDonationCampaign/EditDon
 import AdminRoutes from "@/Routes/AdminRoutes/AdminRoutes";
 import AllUsersPage from "@/pages/Dashboard/AdminDashboard/AllUsersPage/AllUsersPage";
 import ManagePet from "@/pages/Dashboard/AdminDashboard/ManagePet/ManagePet";
+import PetListing from "@/pages/PetListing/PetListing";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
         path: "/register",
         element: <Register />,
       },
+      {
+        path:"/pet-listing",
+        element: <PetListing />
+      }
     ],
   },
   {

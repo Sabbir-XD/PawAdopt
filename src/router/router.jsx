@@ -17,6 +17,7 @@ import AdminRoutes from "@/Routes/AdminRoutes/AdminRoutes";
 import AllUsersPage from "@/pages/Dashboard/AdminDashboard/AllUsersPage/AllUsersPage";
 import ManagePet from "@/pages/Dashboard/AdminDashboard/ManagePet/ManagePet";
 import PetListing from "@/pages/PetListing/PetListing";
+import PetDetails from "@/pages/Dashboard/PetDetails/PetDetails";
 
 export const router = createBrowserRouter([
   {
@@ -36,9 +37,17 @@ export const router = createBrowserRouter([
         element: <Register />,
       },
       {
-        path:"/pet-listing",
-        element: <PetListing />
-      }
+        path: "/pet-listing",
+        element: <PetListing />,
+      },
+      {
+        path: "/pet-listing/:id",
+        element: (
+          <PrivetRoute>
+            <PetDetails />
+          </PrivetRoute>
+        ),
+      },
     ],
   },
   {

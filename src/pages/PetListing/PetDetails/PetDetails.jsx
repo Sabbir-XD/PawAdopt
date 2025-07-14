@@ -1,14 +1,36 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Dialog } from "@headlessui/react";
-import { Button } from "@/components/ui/button";
 import { FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
+import { CardSkeleton } from "@/components/Loading/Loading";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
+import { useParams } from "react-router";
+import { toast } from "react-toastify";
 
-const PetDetails = ({ pet }) => {
-  const { name, age, category, location, shortDescription, longDescription, imageUrl } = pet;
+const PetDetails = () => {
   const { user } = UseAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({ phone: "", address: "" });
+  const axiosSecure = useAxiosSecure();
+  const  petId  = useParams();
+  console.log(petId.id);
+
+  const { data: pets = [], isLoading } = useQuery({
+    queryKey: ["allPets"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/pets/all");
+      return res.data.pets;
+    },
+  });
+
+  if (isLoading) return <CardSkeleton count={1} />;
+
+  const pet = pets.find((item) => item._id === petId?.id);
+
+  if (!pet)
+    return <div className="text-center text-red-500">Pet not found</div>;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,7 +39,6 @@ const PetDetails = ({ pet }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const adoptionData = {
       petId: pet._id,
       petName: pet.name,
@@ -30,18 +51,13 @@ const PetDetails = ({ pet }) => {
     };
 
     try {
-      const res = await fetch("/api/adoptions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(adoptionData),
-      });
-
-      if (res.ok) {
-        alert("Adoption request sent!");
+      const res = await axiosSecure.post("/adoptions", adoptionData);
+      if (res.status === 200 || res.status === 201) {
+        toast.success("Adoption request sent!");
         setIsOpen(false);
         setFormData({ phone: "", address: "" });
       } else {
-        alert("Failed to send adoption request");
+        toast.error("Failed to send adoption request");
       }
     } catch (err) {
       console.error(err);
@@ -49,36 +65,57 @@ const PetDetails = ({ pet }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 rounded-xl shadow-lg bg-white dark:bg-gray-900">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <img src={imageUrl} alt={name} className="w-full rounded-xl object-cover" />
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{name}</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-1">Age: {age} years</p>
-          <p className="text-gray-600 dark:text-gray-300 mb-1">Category: {category}</p>
-          <p className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-3">
-            <FaMapMarkerAlt /> {location}
-          </p>
-          <p className="text-gray-700 dark:text-gray-200 font-medium mb-2">{shortDescription}</p>
-          <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: longDescription }} />
-          <Button className="mt-6" onClick={() => setIsOpen(true)}>
-            Adopt
-          </Button>
-        </div>
-      </div>
+    <div className="max-w-xl mx-auto mt-14 p-6 space-y-4">
+      {/* Pet Info */}
+      <img
+        src={pet.imageUrl}
+        alt={pet.name}
+        className="w-full h-64 object-cover rounded-xl"
+      />
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+        {pet.name}
+      </h2>
+      <p>
+        <strong>Category:</strong> {pet.category}
+      </p>
+      <p>
+        <strong>Age:</strong> {pet.age} year(s)
+      </p>
+      <p className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+        <FaMapMarkerAlt /> {pet.location}
+      </p>
+      <p className="text-gray-700 dark:text-gray-300">
+        <strong>Short Description:</strong> {pet.shortDescription}
+      </p>
+      <div
+        className="prose dark:prose-invert"
+        dangerouslySetInnerHTML={{ __html: pet.longDescription }}
+      />
+
+      {/* Adopt Button */}
+      <Button onClick={() => setIsOpen(true)} className="mt-4 w-full">
+        Adopt
+      </Button>
 
       {/* Modal */}
-      <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        className="relative z-50"
+      >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="w-full max-w-lg rounded-xl bg-white dark:bg-gray-900 p-6">
             <Dialog.Title className="text-xl font-semibold mb-4 text-center">
-              Adopt: {name}
+              Adopt: {pet.name}
             </Dialog.Title>
+
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Disabled Name & Email */}
+              {/* Name (disabled) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Name
+                </label>
                 <input
                   type="text"
                   value={user?.displayName || ""}
@@ -86,8 +123,12 @@ const PetDetails = ({ pet }) => {
                   className="w-full border border-gray-300 bg-gray-100 dark:bg-gray-800 rounded px-3 py-2"
                 />
               </div>
+
+              {/* Email (disabled) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Email
+                </label>
                 <input
                   type="email"
                   value={user?.email || ""}
@@ -96,9 +137,11 @@ const PetDetails = ({ pet }) => {
                 />
               </div>
 
-              {/* Editable Fields */}
+              {/* Phone */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Phone Number
+                </label>
                 <div className="flex items-center border border-gray-300 rounded px-3 py-2 bg-white dark:bg-gray-800">
                   <FaPhoneAlt className="text-gray-400 mr-2" />
                   <input
@@ -112,8 +155,12 @@ const PetDetails = ({ pet }) => {
                   />
                 </div>
               </div>
+
+              {/* Address */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Address
+                </label>
                 <textarea
                   name="address"
                   value={formData.address}
@@ -125,6 +172,7 @@ const PetDetails = ({ pet }) => {
                 />
               </div>
 
+              {/* Submit */}
               <div className="text-center pt-4">
                 <Button type="submit" className="w-full">
                   Submit Adoption Request

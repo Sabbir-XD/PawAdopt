@@ -21,8 +21,6 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  console.log(user);
-
   // Handle scroll effect for navbar
   useEffect(() => {
     const handleScroll = () => {
@@ -41,7 +39,7 @@ const Navbar = () => {
     { name: "Pet Listing", to: "/pet-listing", icon: <FaDog className="mr-2" /> },
     {
       name: "Donation Campaigns",
-      to: "/donate",
+      to: "/donation-campaigns",
       icon: <GiCash className="mr-2" />,
     },
     // {

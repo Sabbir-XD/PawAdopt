@@ -6,6 +6,7 @@ import { router } from "./router/router";
 import AuthProvider from "./context/Authintication/AuthProvider";
 import { CardSkeleton } from "./components/Loading/Loading";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import StripeProvider from "./context/StripeProvider/StripeProvider";
 
 const queryClient = new QueryClient();
 
@@ -14,7 +15,9 @@ createRoot(document.getElementById("root")).render(
     <Suspense fallback={<CardSkeleton count={3} />}>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
+          <StripeProvider>
+            <RouterProvider router={router} />
+          </StripeProvider>
         </QueryClientProvider>
       </AuthProvider>
     </Suspense>

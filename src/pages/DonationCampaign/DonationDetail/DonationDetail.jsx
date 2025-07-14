@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { format } from "date-fns";
 import { CardSkeleton } from "@/components/Loading/Loading";
-// import DonationModal from "./DonationModal"; // ⚠️ We’ll create this next
+import DonationModal from "@/components/DonationModal/DonationModal";
 
 const DonationDetails = () => {
   const { id } = useParams();
@@ -74,11 +74,11 @@ const DonationDetails = () => {
       </div>
 
       {/* Step 2: Donation Modal */}
-      {/* <DonationModal
+      <DonationModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         campaign={campaign}
-      /> */}
+      />
 
       {/* Step 3: Recommended Donations - We'll do next step */}
     </div>

@@ -22,6 +22,7 @@ import DonationCampaign from "@/pages/DonationCampaign/DonationCampaign";
 import DonationDetails from "@/pages/DonationCampaign/DonationDetail/DonationDetail";
 import AllDonationsManage from "@/pages/Dashboard/AdminDashboard/AllDonationsManage/AllDonationsManager";
 import MyDonations from "@/pages/Dashboard/MyDonations/MyDonations";
+import MyAdoptionRequests from "@/pages/Dashboard/MyAdoptionRequests/MyAdoptionRequests";
 
 export const router = createBrowserRouter([
   {
@@ -95,6 +96,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivetRoute>
             <UpdatePetForm />
+          </PrivetRoute>
+        ),
+      },
+      {
+        path: "/dashboard/adoption-requests",
+        element: (
+          <PrivetRoute>
+            <MyAdoptionRequests />
           </PrivetRoute>
         ),
       },

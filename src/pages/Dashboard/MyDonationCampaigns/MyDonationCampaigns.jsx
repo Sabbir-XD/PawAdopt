@@ -31,7 +31,6 @@ const MyDonationCampaigns = () => {
     enabled: !!user?.email,
   });
 
-  console.log(campaigns);
 
   // Mutation for toggling pause/resume
   const pauseMutation = useMutation({

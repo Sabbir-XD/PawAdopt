@@ -15,7 +15,6 @@ const PetDetails = () => {
   const [formData, setFormData] = useState({ phone: "", address: "" });
   const axiosSecure = useAxiosSecure();
   const  petId  = useParams();
-  console.log(petId.id);
 
   const { data: pets = [], isLoading } = useQuery({
     queryKey: ["allPets"],

@@ -23,8 +23,6 @@ const MyDonations = () => {
     },
   });
   
-  
-  console.log(donations);
 
   const handleRefund = async (id) => {
     const result = await Swal.fire({

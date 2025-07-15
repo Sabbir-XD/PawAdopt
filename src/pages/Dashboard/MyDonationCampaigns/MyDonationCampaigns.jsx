@@ -26,7 +26,7 @@ const MyDonationCampaigns = () => {
       const res = await axiosSecure.get(
         `/donations-campaigns?email=${user.email}`
       );
-      return res.data;
+      return res.data.campaigns;
     },
     enabled: !!user?.email,
   });

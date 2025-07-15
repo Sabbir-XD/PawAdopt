@@ -42,6 +42,7 @@ const userNavItems = [
     href: "/dashboard/create-donation",
     icon: HandCoins,
   },
+  { name: "My Donations Campaigns", href: "/dashboard/my-donations-campaigns", icon: ListChecks },
   { name: "My Donations", href: "/dashboard/my-donations", icon: ListChecks },
 ];
 

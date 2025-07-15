@@ -55,6 +55,7 @@ const DonationModal = ({ isOpen, setIsOpen, campaign }) => {
         const donationData = {
           campaignId: campaign._id,
           campaignTitle: campaign.petName,
+          campaignImageUrl: campaign.imageUrl,
           amount: parseFloat(amount),
           donatorEmail: user?.email,
           donatorName: user?.displayName,

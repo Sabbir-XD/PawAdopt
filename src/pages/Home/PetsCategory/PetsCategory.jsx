@@ -96,7 +96,7 @@ const PetCategory = () => {
         {isLoading || categories.length === 0 ? (
           <p className="text-center text-gray-500">Loading...</p>
         ) : (
-          <div className="relative h-[400px] md:h-[450px]">
+          <div className="relative h-[350px]">
             <button
               onClick={prev}
               className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-teal-700 p-3 rounded-full shadow-lg"
@@ -166,7 +166,7 @@ const PetCategory = () => {
                       <div
                         className={`bg-gradient-to-br ${
                           cat.color
-                        } rounded-2xl overflow-hidden shadow-xl h-[400px] md:h-[450px] flex flex-col transition-all duration-300 ${
+                        } rounded-2xl overflow-hidden shadow-xl h-[300px] md:h-[300px] flex flex-col transition-all duration-300 ${
                           pos === "center" ? "cursor-default" : "cursor-pointer"
                         }`}
                         onClick={() => pos !== "center" && goToSlide(i)}
@@ -175,7 +175,7 @@ const PetCategory = () => {
                           <img
                             src={cat.image}
                             alt={cat.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-[200px] object-cover"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                           {pos === "center" && (

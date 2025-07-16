@@ -23,6 +23,7 @@ import DonationDetails from "@/pages/DonationCampaign/DonationDetail/DonationDet
 import AllDonationsManage from "@/pages/Dashboard/AdminDashboard/AllDonationsManage/AllDonationsManager";
 import MyDonations from "@/pages/Dashboard/MyDonations/MyDonations";
 import MyAdoptionRequests from "@/pages/Dashboard/MyAdoptionRequests/MyAdoptionRequests";
+import PetByCategory from "@/pages/Home/PetsCategory/PetByCategory/PetByCategory";
 
 export const router = createBrowserRouter([
   {
@@ -50,6 +51,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivetRoute>
             <PetDetails />
+          </PrivetRoute>
+        ),
+      },
+      {
+        path: "/pets/category/:name",
+        element: (
+          <PrivetRoute>
+            <PetByCategory />
           </PrivetRoute>
         ),
       },

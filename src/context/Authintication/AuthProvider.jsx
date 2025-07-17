@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import axios from "axios";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -12,12 +11,12 @@ import {
 } from "firebase/auth";
 import { auth } from "../../../firebase.init";
 import { toast } from "react-toastify";
-
+import axios from "axios";
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const provider = new GoogleAuthProvider()
+  const provider = new GoogleAuthProvider();
 
   const handleGoogleLoginUser = () => {
     setLoading(true);
@@ -46,9 +45,6 @@ const AuthProvider = ({ children }) => {
       await signOut(auth);
       setUser(null);
 
-      // ✅ Clear JWT from cookies via backend
-      await axios.post("/logout", null, { withCredentials: true });
-
       toast.success("Signed out successfully!");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -62,6 +58,21 @@ const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
+      if (currentUser?.email) {
+        // ✅ Send JWT request (must be after saving user)
+        axios
+          .post(
+            "http://localhost:5000/jwt",
+            { email: currentUser?.email },
+            { withCredentials: true }
+          )
+          .then((res) => {
+            console.log("token after jWT", res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     });
     return () => unsubscribe();
   }, []);

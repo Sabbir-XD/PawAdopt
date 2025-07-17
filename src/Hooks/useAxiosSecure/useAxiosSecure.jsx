@@ -4,7 +4,7 @@ import UseAuth from "../UseAuth/UseAuth";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL, // Replace with your server URL
-  withCredentials: true, 
+  withCredentials: true,
 });
 const useAxiosSecure = () => {
   const { user, handleLogoutUser } = UseAuth();
@@ -16,18 +16,11 @@ const useAxiosSecure = () => {
       config
     ) {
       // Do something before request is sent
-      if (user) {
-        config.headers.Authorization = `Bearer ${user.token}`;
-      }
       return config;
     });
-    // Cleanup to remove old interceptor
-    return () => {
-      axiosInstance.interceptors.request.eject(interceptor);
-    };
-  }, [user]);
 
-  //response interceptor
+
+    //response interceptor
   axiosInstance.interceptors.response.use(
     (response) => {
       return response;
@@ -39,6 +32,13 @@ const useAxiosSecure = () => {
       return Promise.reject(error);
     }
   );
+
+  // Cleanup to remove old interceptor
+  return () => {
+    axiosInstance.interceptors.request.eject(interceptor);
+  }
+  }, [user, handleLogoutUser]);
+
 
   return axiosInstance;
 };

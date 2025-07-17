@@ -46,67 +46,6 @@ const Register = () => {
     reset,
   } = useForm();
 
-  // const onSubmit = async (data) => {
-  //   if (!imageFile) {
-  //     toast.error("Please upload your profile image first.");
-  //     return;
-  //   }
-
-  //   setLoading(true);
-
-  //   try {
-  //     // ✅ Upload image to Cloudinary
-  //     const formData = new FormData();
-  //     formData.append("file", imageFile);
-  //     formData.append("upload_preset", "petcare");
-
-  //     const cloudRes = await axios.post(
-  //       "https://api.cloudinary.com/v1_1/ddgcar30i/image/upload",
-  //       formData
-  //     );
-
-  //     const imageUrl = cloudRes.data.secure_url;
-
-  //     const result = await handleCreateUser(data.email, data.password);
-  //     const user = result.user;
-
-  //     await handleUpdateProfile({
-  //       displayName: data.name,
-  //       photoURL: imageUrl,
-  //     });
-
-  //     setUser({
-  //       ...user,
-  //       displayName: data.name,
-  //       photoURL: imageUrl,
-  //     });
-
-  //     // ✅ Save user to database
-  //     const payload = {
-  //       name: data.name,
-  //       email: data.email,
-  //       role: "user",
-  //       photoURL: imageUrl,
-  //       uid: user.uid,
-  //       createdAt: new Date().toISOString(),
-  //       updatedAt: new Date().toISOString(),
-  //     };
-
-  //     await axiosSecure.post("/users", payload);
-
-  //     toast.success("Registration Successful!");
-  //     reset();
-  //     setImagePreview(null);
-  //     setImageFile(null);
-  //     navigate(location?.state || "/");
-  //   } catch (error) {
-  //     console.error("Registration Error:", error);
-  //     toast.error("Registration failed.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const onSubmit = async (data) => {
     if (!imageFile) {
       toast.error("Please upload your profile image first.");
@@ -116,7 +55,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // Upload image to Cloudinary
+      // ✅ Upload image to Cloudinary
       const formData = new FormData();
       formData.append("file", imageFile);
       formData.append("upload_preset", "petcare");
@@ -142,7 +81,7 @@ const Register = () => {
         photoURL: imageUrl,
       });
 
-      // Save user to DB
+      // ✅ Save user to database
       const payload = {
         name: data.name,
         email: data.email,
@@ -154,13 +93,6 @@ const Register = () => {
       };
 
       await axiosSecure.post("/users", payload);
-
-      // ✅ Send JWT request (must be after saving user)
-      await axiosSecure.post(
-        "/jwt",
-        { email: user.email },
-        { withCredentials: true }
-      );
 
       toast.success("Registration Successful!");
       reset();

@@ -75,63 +75,65 @@ const ManagePet = () => {
           <tbody>
             {pets.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-4 text-center text-gray-500">
+                <td colSpan={6} className="p-4 text-center text-gray-500">
                   No pets found.
                 </td>
               </tr>
             )}
-            {pets.map(
-              (pet, idx) => (
-                console.log(pet),
-                (
-                  <tr
-                    key={pet._id}
-                    className="hover:bg-gray-50 border-b last:border-b-0"
+            {pets.map((pet, idx) => (
+              <tr
+                key={pet._id}
+                className="hover:bg-gray-50 border-b last:border-b-0"
+              >
+                <td className="p-3">{idx + 1}</td>
+                <td className="p-3 font-semibold">{pet.name}</td>
+                <td className="p-3 font-semibold">
+                  <img
+                    src={pet?.imageUrl}
+                    alt="pet"
+                    className="h-12 w-12 rounded object-cover"
+                  />
+                </td>
+                <td className="p-3 capitalize">{pet.category}</td>
+                <td className="p-3">
+                  <span
+                    className={`px-3 py-1 rounded-full font-semibold select-none ${
+                      pet.adopted
+                        ? "bg-green-200 text-green-800"
+                        : "bg-yellow-200 text-yellow-800"
+                    }`}
                   >
-                    <td className="p-3">{idx + 1}</td>
-                    <td className="p-3 font-semibold">{pet.name}</td>
-                    <td className="p-3 font-semibold">
-                      <img
-                        src={pet?.imageUrl}
-                        alt=""
-                        className="h-12 w-12 rounded object-cover"
-                      />
-                    </td>
-                    <td className="p-3 capitalize">{pet.category}</td>
-                    <td className="p-3">
-                      <span
-                        onClick={() => toggleAdopted(pet)}
-                        className={`cursor-pointer px-3 py-1 rounded-full font-semibold select-none ${
-                          pet.adopted
-                            ? "bg-green-200 text-green-800"
-                            : "bg-yellow-200 text-yellow-800"
-                        }`}
-                        title="Toggle Adopted Status"
-                      >
-                        {pet.adopted ? "Adopted" : "Available"}
-                      </span>
-                    </td>
-                    <td className="p-3 space-x-2">
-                      <Button
-                        // onClick={() => openEditModal(pet)}
-                        onClick={() =>
-                          navigate(`/dashboard/update-pet/${pet?._id}`)
-                        }
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        onClick={() => handleDelete(pet._id)}
-                        className="bg-red-600 hover:bg-red-700"
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                )
-              )
-            )}
+                    {pet.adopted ? "Adopted" : "not adopted"}
+                  </span>
+                </td>
+                <td className="p-3 space-x-2">
+                  <Button
+                    onClick={() =>
+                      navigate(`/dashboard/update-pet/${pet?._id}`)
+                    }
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    onClick={() => handleDelete(pet._id)}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    onClick={() => toggleAdopted(pet)}
+                    className={`${
+                      pet.adopted
+                        ? "bg-yellow-500 hover:bg-yellow-600"
+                        : "bg-green-500 hover:bg-green-600"
+                    }`}
+                  >
+                    {pet.adopted ? "Mark as Available" : "Mark as Adopted"}
+                  </Button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

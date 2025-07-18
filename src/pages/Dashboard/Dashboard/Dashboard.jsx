@@ -108,7 +108,7 @@ const Dashboard = () => {
       {/* ✅ USER STATS */}
       {stats.role === "user" && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <StatCard title="My Pets" value={stats.myPets} />
             <StatCard title="My Campaigns" value={stats.myCampaigns} />
             <StatCard title="My Donations" value={`$${stats.myDonations}`} />

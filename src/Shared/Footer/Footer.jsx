@@ -42,7 +42,7 @@ import {
     ];
   
     return (
-      <footer className="bg-gradient-to-br from-teal-800 via-teal-900 to-cyan-900 text-white pt-16 pb-10 px-4 md:px-8 lg:px-12">
+      <footer className="bg-gradient-to-br from-teal-800 to-cyan-800 text-white dark:from-gary-800 dark:to-gray-800 pt-16 pb-10 px-4 md:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto space-y-16">
           {/* Main Footer Content */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-10">

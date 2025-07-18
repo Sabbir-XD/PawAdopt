@@ -1,4 +1,3 @@
-// PetCategoryCarousel.jsx
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
@@ -29,7 +28,7 @@ const PetCategory = () => {
         image: pet.imageUrl,
         count: 1,
         description: "Discover lovable pets in this category",
-        color: "from-teal-500 to-teal-600", // default color
+        color: "from-teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700",
       };
     } else {
       acc[key].count += 1;
@@ -81,25 +80,30 @@ const PetCategory = () => {
   ];
 
   return (
-    <section className="py-16 px-4 bg-gradient-to-b from-teal-50 to-white">
+    <section className="py-16 px-4 bg-gradient-to-b from-teal-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Browse Our <span className="text-teal-600">Pet Categories</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Browse Our{" "}
+            <span className="text-teal-600 dark:text-teal-400">
+              Pet Categories
+            </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Discover your perfect companion from{" "}
             {categories.reduce((sum, c) => sum + c.count, 0)}+ rescued animals
           </p>
         </div>
 
         {isLoading || categories.length === 0 ? (
-          <p className="text-center text-gray-500">Loading...</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            Loading...
+          </p>
         ) : (
-          <div className="relative h-[350px]">
+          <div className="relative h-[400px]">
             <button
               onClick={prev}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-teal-700 p-3 rounded-full shadow-lg"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-teal-700 p-3 rounded-full shadow-lg dark:bg-gray-800/80 dark:hover:bg-gray-700 dark:text-teal-400"
               aria-label="Previous category"
             >
               <FaArrowLeft />
@@ -107,7 +111,7 @@ const PetCategory = () => {
 
             <button
               onClick={next}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-teal-700 p-3 rounded-full shadow-lg"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-teal-700 p-3 rounded-full shadow-lg dark:bg-gray-800/80 dark:hover:bg-gray-700 dark:text-teal-400"
               aria-label="Next category"
             >
               <FaArrowRight />
@@ -166,7 +170,7 @@ const PetCategory = () => {
                       <div
                         className={`bg-gradient-to-br ${
                           cat.color
-                        } rounded-2xl overflow-hidden shadow-xl h-[300px] md:h-[300px] flex flex-col transition-all duration-300 ${
+                        } rounded-2xl overflow-hidden shadow-xl h-[300px] md:h-[400px] flex flex-col transition-all duration-300 ${
                           pos === "center" ? "cursor-default" : "cursor-pointer"
                         }`}
                         onClick={() => pos !== "center" && goToSlide(i)}
@@ -175,11 +179,11 @@ const PetCategory = () => {
                           <img
                             src={cat.image}
                             alt={cat.name}
-                            className="w-full h-[200px] object-cover"
+                            className="w-full h-[225px] object-cover"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                           {pos === "center" && (
-                            <div className="absolute bottom-4 left-4 bg-white/90 text-teal-800 px-4 py-2 rounded-full font-bold flex items-center gap-2">
+                            <div className="absolute bottom-4 left-4 bg-white/90 dark:bg-gray-800/90 text-teal-800 dark:text-teal-200 px-4 py-2 rounded-full font-bold flex items-center gap-2">
                               <FaPaw />
                               <span>{cat.count} Available</span>
                             </div>
@@ -191,7 +195,8 @@ const PetCategory = () => {
                               pos === "center" ? "text-white" : "text-white/80"
                             }`}
                           >
-                            {cat.name}
+                            {cat.name.charAt(0).toUpperCase() +
+                              cat.name.slice(1)}
                           </h3>
                           <p
                             className={`mb-4 ${
@@ -211,7 +216,7 @@ const PetCategory = () => {
                                   `/pets/category/${categories[index].name}`
                                 )
                               }
-                              className="mt-auto bg-white text-teal-700 hover:bg-teal-50 font-bold px-6 py-3 rounded-lg shadow-md flex items-center justify-center gap-2"
+                              className="mt-auto bg-white dark:bg-gray-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-gray-700 font-bold px-6 py-3 rounded-lg shadow-md flex items-center justify-center gap-2"
                             >
                               <FaPaw />
                               <span>View {cat.name}</span>

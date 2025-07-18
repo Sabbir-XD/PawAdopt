@@ -15,6 +15,7 @@ import {
 import { GiCash } from "react-icons/gi";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import { motion, AnimatePresence } from "framer-motion";
+import Dark from "@/components/Dark/Dark";
 
 const Navbar = () => {
   const { user, handleLogoutUser } = UseAuth();
@@ -36,30 +37,29 @@ const Navbar = () => {
 
   const links = [
     { name: "Home", to: "/", icon: <FaHome className="mr-2" /> },
-    { name: "Pet Listing", to: "/pet-listing", icon: <FaDog className="mr-2" /> },
+    {
+      name: "Pet Listing",
+      to: "/pet-listing",
+      icon: <FaDog className="mr-2" />,
+    },
     {
       name: "Donation Campaigns",
       to: "/donation-campaigns",
       icon: <GiCash className="mr-2" />,
     },
-    // {
-    //   name: "Favorites",
-    //   to: "/favorites",
-    //   icon: <FaHeart className="mr-2" />,
-    // },
   ];
 
   const baseLinkClass =
     "flex items-center py-2 px-3 rounded-lg font-medium transition-all duration-300";
-  const activeClass = "bg-white/20 text-white shadow-lg";
-  const inactiveClass = "text-white/90 hover:text-white hover:bg-white/10";
+  const activeClass = "bg-white/20 text-white shadow-lg dark:bg-white/30";
+  const inactiveClass = "text-white/90 hover:text-white hover:bg-white/10 dark:hover:bg-white/20";
 
   return (
     <nav
       className={`fixed w-full top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-gradient-to-r from-teal-700 to-cyan-700 shadow-xl"
-          : "bg-gradient-to-r from-teal-600 to-cyan-600"
+          ? "bg-gradient-to-r from-teal-700 to-cyan-700 shadow-xl dark:from-teal-800 dark:to-cyan-800"
+          : "bg-gradient-to-r from-teal-700 to-cyan-700 dark:to-cyan-800"
       }`}
     >
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,7 +67,7 @@ const Navbar = () => {
           {/* Left: Logo & Mobile Toggle */}
           <div className="flex items-center">
             <button
-              className="md:hidden text-white p-2 rounded-lg hover:bg-white/20 transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+              className="md:hidden text-white p-2 rounded-lg hover:bg-white/20 transition-all focus:outline-none focus:ring-2 focus:ring-white/50 dark:hover:bg-white/30"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -87,13 +87,13 @@ const Navbar = () => {
                 whileTap={{ scale: 0.95 }}
                 className="relative"
               >
-                <div className="h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
-                  <FaPaw className="text-teal-600 text-xl" />
+                <div className="h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md group-hover:shadow-lg transition-all dark:bg-gray-800">
+                  <FaPaw className="text-teal-600 text-xl dark:text-teal-400" />
                 </div>
-                <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-amber-400 rounded-full border-2 border-white" />
+                <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-amber-400 rounded-full border-2 border-white dark:border-gray-800" />
               </motion.div>
               <span className="text-white text-xl font-bold hidden md:inline">
-                <span className="text-amber-300">Paw</span>Adopt
+                <span className="text-amber-400 dark:text-amber-300">Paw</span>Adopt
               </span>
             </NavLink>
           </div>
@@ -117,11 +117,16 @@ const Navbar = () => {
 
           {/* Right: Auth Buttons */}
           <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Dark mode toggle */}
+            <div className="flex items-center">
+              <Dark />
+            </div>
+            
             {!user ? (
               <>
                 <NavLink
                   to="/register"
-                  className="hidden sm:inline-flex items-center text-white/90 hover:text-white px-4 py-2 rounded-lg font-medium hover:bg-white/10 transition-all"
+                  className="hidden sm:inline-flex items-center text-white/90 hover:text-white px-4 py-2 rounded-lg font-medium hover:bg-white/10 transition-all dark:hover:bg-white/20"
                 >
                   Register
                 </NavLink>
@@ -131,7 +136,7 @@ const Navbar = () => {
                 >
                   <NavLink
                     to="/login"
-                    className="bg-white text-teal-600 hover:bg-teal-50 px-4 py-2 rounded-lg flex items-center font-bold shadow-md hover:shadow-lg transition-all"
+                    className="bg-white text-teal-600 hover:bg-teal-50 px-4 py-2 rounded-lg flex items-center font-bold shadow-md hover:shadow-lg transition-all dark:bg-gray-800 dark:text-teal-400 dark:hover:bg-gray-700"
                   >
                     <FaPaw className="mr-2" />
                     Login
@@ -151,19 +156,19 @@ const Navbar = () => {
                         <img
                           src={user.photoURL || "https://github.com/shadcn.png"}
                           alt="Profile"
-                          className="h-10 w-10 rounded-full object-cover border-2 border-white shadow-md bg-gray-200"
+                          className="h-10 w-10 rounded-full object-cover border-2 border-white shadow-md bg-gray-200 dark:border-gray-700"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = "/default-profile.png";
                           }}
                         />
-                        <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-400 rounded-full border-2 border-white" />
+                        <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
                       </motion.div>
                       <motion.div
                         animate={{ rotate: open ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <FaChevronDown className="w-4 h-4 text-white/80 group-hover:text-white transition" />
+                        <FaChevronDown className="w-4 h-4 text-white/80 group-hover:text-white transition dark:text-white/90" />
                       </motion.div>
                     </Menu.Button>
 
@@ -176,7 +181,7 @@ const Navbar = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-xl ring-1 ring-black/5 z-50 focus:outline-none overflow-hidden">
+                      <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-xl ring-1 ring-black/5 z-50 focus:outline-none overflow-hidden dark:bg-gray-800 dark:ring-white/10">
                         <div className="py-1">
                           <Menu.Item>
                             {({ active }) => (
@@ -184,28 +189,28 @@ const Navbar = () => {
                                 to="/dashboard"
                                 className={`${
                                   active
-                                    ? "bg-teal-50 text-teal-700"
-                                    : "text-gray-700"
+                                    ? "bg-teal-50 text-teal-700 dark:bg-gray-700 dark:text-teal-400"
+                                    : "text-gray-700 dark:text-gray-200"
                                 } block px-4 py-3 text-sm font-medium flex items-center`}
                               >
-                                <FaPaw className="mr-2 text-teal-600" />
+                                <FaPaw className="mr-2 text-teal-600 dark:text-teal-400" />
                                 Dashboard
                               </NavLink>
                             )}
                           </Menu.Item>
 
-                          <div className="border-t border-gray-100"></div>
+                          <div className="border-t border-gray-100 dark:border-gray-700"></div>
                           <Menu.Item>
                             {({ active }) => (
                               <button
                                 onClick={handleLogoutUser}
                                 className={`${
                                   active
-                                    ? "bg-teal-50 text-teal-700"
-                                    : "text-gray-700"
+                                    ? "bg-teal-50 text-teal-700 dark:bg-gray-700 dark:text-teal-400"
+                                    : "text-gray-700 dark:text-gray-200"
                                 } block w-full px-4 py-3 text-left text-sm font-medium flex items-center`}
                               >
-                                <FaSignOutAlt className="mr-2 text-teal-600" />
+                                <FaSignOutAlt className="mr-2 text-teal-600 dark:text-teal-400" />
                                 Logout
                               </button>
                             )}
@@ -229,7 +234,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-gradient-to-b from-teal-700 to-cyan-700 shadow-xl overflow-hidden"
+            className="md:hidden bg-gradient-to-b from-teal-700 to-cyan-700 shadow-xl overflow-hidden dark:from-teal-800 dark:to-cyan-800"
           >
             <div className="px-4 pt-2 pb-6 space-y-2">
               {links.map((link) => (
@@ -244,8 +249,8 @@ const Navbar = () => {
                     className={({ isActive }) =>
                       `block rounded-xl px-4 py-3 text-lg font-medium ${
                         isActive
-                          ? "bg-white/20 text-white shadow-md"
-                          : "text-white/90 hover:text-white hover:bg-white/10"
+                          ? "bg-white/20 text-white shadow-md dark:bg-white/30"
+                          : "text-white/90 hover:text-white hover:bg-white/10 dark:hover:bg-white/20"
                       } flex items-center`
                     }
                     onClick={() => setMobileMenuOpen(false)}
@@ -264,7 +269,7 @@ const Navbar = () => {
                   >
                     <NavLink
                       to="/login"
-                      className="block bg-white text-teal-600 px-4 py-3 rounded-xl text-lg font-bold flex items-center justify-center shadow-md"
+                      className="block bg-white text-teal-600 px-4 py-3 rounded-xl text-lg font-bold flex items-center justify-center shadow-md dark:bg-gray-800 dark:text-teal-400"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <FaPaw className="mr-2" />
@@ -278,7 +283,7 @@ const Navbar = () => {
                   >
                     <NavLink
                       to="/register"
-                      className="block text-white px-4 py-3 rounded-xl text-lg font-medium text-center hover:bg-white/10"
+                      className="block text-white px-4 py-3 rounded-xl text-lg font-medium text-center hover:bg-white/10 dark:hover:bg-white/20"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Create Account
@@ -295,7 +300,7 @@ const Navbar = () => {
                   >
                     <NavLink
                       to="/dashboard"
-                      className="block text-white px-4 py-3 rounded-xl text-lg font-medium flex items-center hover:bg-white/10"
+                      className="block text-white px-4 py-3 rounded-xl text-lg font-medium flex items-center hover:bg-white/10 dark:hover:bg-white/20"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <FaPaw className="mr-2" />
@@ -312,7 +317,7 @@ const Navbar = () => {
                         handleLogoutUser();
                         setMobileMenuOpen(false);
                       }}
-                      className="block w-full text-white px-4 py-3 rounded-xl text-lg font-medium text-left flex items-center hover:bg-white/10"
+                      className="block w-full text-white px-4 py-3 rounded-xl text-lg font-medium text-left flex items-center hover:bg-white/10 dark:hover:bg-white/20"
                     >
                       <FaSignOutAlt className="mr-2" />
                       Logout

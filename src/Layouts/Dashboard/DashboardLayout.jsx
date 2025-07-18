@@ -26,6 +26,7 @@ import { ToastContainer } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import { CardSkeleton } from "@/components/Loading/Loading";
+import Dark from "@/components/Dark/Dark";
 
 const userNavItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -298,6 +299,7 @@ const DashboardLayout = () => {
           <div className="flex-1"></div>
 
           <div className="flex items-center space-x-4">
+            <Dark/>
             <Button
               variant="ghost"
               size="icon"

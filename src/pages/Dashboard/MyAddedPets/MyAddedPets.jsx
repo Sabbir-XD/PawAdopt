@@ -28,7 +28,6 @@ const MyAddedPets = () => {
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-  // Fetch pets with useQuery
   const {
     data: pets = [],
     isLoading,
@@ -42,7 +41,6 @@ const MyAddedPets = () => {
     enabled: !!user?.email,
   });
 
-  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
       await axiosSecure.delete(`/pets/${id}`);
@@ -54,7 +52,6 @@ const MyAddedPets = () => {
     onError: () => toast.error("Failed to delete pet"),
   });
 
-  // Adopt mutation
   const adoptMutation = useMutation({
     mutationFn: async (id) => {
       await axiosSecure.patch(`/pets/${id}/adopt`);
@@ -107,7 +104,7 @@ const MyAddedPets = () => {
           <img
             src={info.getValue()}
             alt="pet"
-            className="h-12 w-12 rounded object-cover"
+            className="h-12 w-12 rounded object-cover border dark:border-gray-600"
           />
         ),
       }),
@@ -115,10 +112,10 @@ const MyAddedPets = () => {
         header: "Status",
         cell: (info) => (
           <span
-            className={`px-2 py-1 rounded text-xs font-semibold ${
+            className={`px-3 py-1 rounded-full text-xs font-semibold shadow ${
               info.getValue()
-                ? "bg-green-200 text-green-800"
-                : "bg-yellow-200 text-yellow-800"
+                ? "bg-green-200 text-green-800 dark:bg-green-700 dark:text-green-100"
+                : "bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-100"
             }`}
           >
             {info.getValue() ? "Adopted" : "Not Adopted"}
@@ -129,13 +126,10 @@ const MyAddedPets = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          console.log(row),
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               size="sm"
-              onClick={() =>
-                navigate(`/dashboard/update-pet/${row.original._id}`)
-              }
+              onClick={() => navigate(`/dashboard/update-pet/${row.original._id}`)}
             >
               Update
             </Button>
@@ -178,23 +172,25 @@ const MyAddedPets = () => {
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold text-teal-700 mb-4">My Added Pets</h2>
+      <h2 className="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-4">
+        My Added Pets
+      </h2>
 
       {isLoading ? (
         <TableRowSkeleton columns={columns.length} />
       ) : isError ? (
-        <p className="text-red-500">Failed to load pets</p>
+        <p className="text-red-500 dark:text-red-400">Failed to load pets</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border">
-          <table className="min-w-full bg-white">
-            <thead className="bg-teal-100">
+        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <table className="min-w-full text-sm">
+            <thead className="bg-teal-100 dark:bg-gray-800">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="px-4 py-2 text-left text-sm font-semibold text-teal-700 cursor-pointer hover:bg-teal-50"
+                      className="px-4 py-3 text-left font-semibold text-teal-700 dark:text-teal-300 cursor-pointer hover:bg-teal-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       {flexRender(
                         header.column.columnDef.header,
@@ -207,13 +203,13 @@ const MyAddedPets = () => {
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-t">
+                <tr
+                  key={row.id}
+                  className="border-t border-gray-200 dark:border-gray-700 hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-2 text-sm">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                    <td key={cell.id} className="px-4 py-3 text-gray-800 dark:text-gray-200">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
                 </tr>
@@ -223,9 +219,8 @@ const MyAddedPets = () => {
         </div>
       )}
 
-      {/* Pagination Controls */}
       {table.getPageCount() > 1 && (
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex justify-between items-center gap-4 mt-6 text-sm">
           <Button
             variant="outline"
             size="sm"
@@ -234,9 +229,8 @@ const MyAddedPets = () => {
           >
             Previous
           </Button>
-          <span className="text-sm px-2 py-1">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+          <span className="text-gray-700 dark:text-gray-300">
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </span>
           <Button
             variant="outline"

@@ -19,10 +19,9 @@ const MyDonations = () => {
     enabled: !!user?.email,
     queryFn: async () => {
       const res = await axiosSecure.get(`/donations-payments/user?email=${user.email}`);
-      return res.data; 
+      return res.data;
     },
   });
-  
 
   const handleRefund = async (id) => {
     const result = await Swal.fire({
@@ -52,46 +51,52 @@ const MyDonations = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">My Donations</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">My Donations</h2>
 
       {isLoading ? (
-        <p className="text-gray-500">Loading donations...</p>
+        <p className="text-gray-500 dark:text-gray-400">Loading donations...</p>
       ) : isError ? (
-        <p className="text-red-500">Failed to load donations.</p>
+        <p className="text-red-500 dark:text-red-400">Failed to load donations.</p>
       ) : donations.length === 0 ? (
-        <p className="text-center text-gray-500 mt-8">No donations found.</p>
+        <p className="text-center text-gray-500 dark:text-gray-400 mt-8">No donations found.</p>
       ) : (
-        <div className="overflow-x-auto border rounded-xl">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-100 dark:bg-gray-800">
+        <div className="overflow-x-auto bg-white dark:bg-gray-900 rounded-2xl shadow border border-gray-200 dark:border-gray-700">
+          <table className="min-w-full text-sm">
+            <thead className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 uppercase">
               <tr>
-                <th className="px-4 py-2 text-left text-sm font-medium">Image</th>
-                <th className="px-4 py-2 text-left text-sm font-medium">Pet Name</th>
-                <th className="px-4 py-2 text-left text-sm font-medium">Amount</th>
-                <th className="px-4 py-2 text-left text-sm font-medium">Action</th>
+                <th className="px-6 py-4 text-left rounded-tl-2xl">Image</th>
+                <th className="px-6 py-4 text-left">Pet Name</th>
+                <th className="px-6 py-4 text-left">Amount</th>
+                <th className="px-6 py-4 text-left rounded-tr-2xl">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
-              {donations.map((donation) => (
-                <tr key={donation._id}>
-                  <td className="px-4 py-2">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {donations.map((donation, idx) => (
+                <tr
+                  key={donation._id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+                >
+                  <td className="px-6 py-4">
                     <img
                       src={donation.campaignImageUrl || "https://via.placeholder.com/50"}
                       alt="pet"
-                      className="h-12 w-12 object-cover rounded"
+                      className="h-12 w-12 object-cover rounded-full border border-gray-300 dark:border-gray-600"
                     />
                   </td>
-                  <td className="px-4 py-2">{donation.campaignTitle}</td>
-                  <td className="px-4 py-2 font-semibold text-green-600">
+                  <td className="px-6 py-4 font-medium text-gray-800 dark:text-gray-100">
+                    {donation.campaignTitle}
+                  </td>
+                  <td className="px-6 py-4 text-green-600 dark:text-green-400 font-semibold">
                     ${donation.amount}
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-6 py-4">
                     <Button
                       size="sm"
                       variant="destructive"
                       onClick={() => handleRefund(donation._id)}
+                      className="gap-1"
                     >
-                      <FaUndo className="mr-1" />
+                      <FaUndo />
                       Refund
                     </Button>
                   </td>

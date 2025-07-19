@@ -38,7 +38,6 @@ const CreateDonationCampaign = () => {
     longDescription: Yup.string().required("Long description is required"),
   });
 
-  // Upload image to Cloudinary
   const uploadImageToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -93,8 +92,8 @@ const CreateDonationCampaign = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-3xl font-bold text-center text-emerald-600 mb-6">
+    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md">
+      <h2 className="text-3xl font-bold text-center text-teal-600 dark:text-teal-400 mb-6">
         Create Donation Campaign
       </h2>
 
@@ -105,9 +104,9 @@ const CreateDonationCampaign = () => {
       >
         {({ setFieldValue, values, touched, errors, isSubmitting }) => (
           <Form className="space-y-6">
-            {/* Pet Image Upload */}
+            {/* Image Upload */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Pet Picture
               </label>
               <input
@@ -120,25 +119,25 @@ const CreateDonationCampaign = () => {
                     setImagePreview(URL.createObjectURL(file));
                   }
                 }}
-                className="w-full border p-2 rounded-md"
+                className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-800 dark:text-white"
               />
               {imagePreview && (
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  className="mt-3 w-48 h-48 object-cover rounded-lg border"
+                  className="mt-3 w-48 h-48 object-cover rounded-lg border dark:border-gray-600"
                 />
               )}
             </div>
 
             {/* Pet Name */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
+              <label className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
                 Pet Name
               </label>
               <Field
                 name="petName"
-                className="w-full border p-2 rounded-md"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white p-2 rounded-md"
               />
               <ErrorMessage
                 name="petName"
@@ -149,13 +148,13 @@ const CreateDonationCampaign = () => {
 
             {/* Max Donation */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Maximum Donation Amount
               </label>
               <Field
                 type="number"
                 name="maxDonation"
-                className="w-full border p-2 rounded-md"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white p-2 rounded-md"
               />
               <ErrorMessage
                 name="maxDonation"
@@ -166,13 +165,13 @@ const CreateDonationCampaign = () => {
 
             {/* Deadline */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Last Date of Donation
               </label>
               <Field
                 type="date"
                 name="deadline"
-                className="w-full border p-2 rounded-md"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white p-2 rounded-md"
               />
               <ErrorMessage
                 name="deadline"
@@ -183,12 +182,12 @@ const CreateDonationCampaign = () => {
 
             {/* Short Description */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Short Description
               </label>
               <Field
                 name="shortDescription"
-                className="w-full border p-2 rounded-md"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white p-2 rounded-md"
               />
               <ErrorMessage
                 name="shortDescription"
@@ -199,14 +198,17 @@ const CreateDonationCampaign = () => {
 
             {/* Long Description */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Long Description
               </label>
-              <ReactQuill
-                theme="snow"
-                value={values.longDescription}
-                onChange={(val) => setFieldValue("longDescription", val)}
-              />
+              <div className="bg-white dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
+                <ReactQuill
+                  theme="snow"
+                  value={values.longDescription}
+                  onChange={(val) => setFieldValue("longDescription", val)}
+                  className="dark:text-white"
+                />
+              </div>
               {touched.longDescription && errors.longDescription && (
                 <div className="text-red-500 text-sm mt-1">
                   {errors.longDescription}
@@ -214,11 +216,11 @@ const CreateDonationCampaign = () => {
               )}
             </div>
 
-            {/* Submit */}
+            {/* Submit Button */}
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white py-3 text-lg font-semibold rounded-xl shadow-md"
+              className="w-full bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 dark:from-teal-600 dark:to-teal-700 hover:dark:from-teal-700 hover:dark:to-teal-800 text-white py-3 text-lg font-semibold rounded-xl shadow-md"
             >
               {isSubmitting ? "Creating..." : "Create Campaign"}
             </Button>

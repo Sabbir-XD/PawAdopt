@@ -86,18 +86,9 @@ const AddPetForm = () => {
       createdAt: new Date().toISOString(),
     };
 
-    console.log(pet);
-
     try {
-      await axiosSecure
-        .post("/pets", pet)
-        .then((res) => {
-          console.log(res.data);
-          toast.success("Pet added successfully!");
-        })
-        .catch((error) => console.log(error));
-
-      // resetForm();
+      await axiosSecure.post("/pets", pet);
+      toast.success("Pet added successfully!");
       setUploadedImage("");
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -107,12 +98,12 @@ const AddPetForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-1 md:p-6 bg-white rounded-xl shadow-lg">
+    <div className="max-w-4xl mx-auto p-1 md:p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
       <div className="mb-8 text-center">
-        <h2 className="text-3xl font-bold text-teal-700 mb-2">
+        <h2 className="text-3xl font-bold text-teal-700 dark:text-teal-300 mb-2">
           Add a New Pet for Adoption
         </h2>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 dark:text-gray-300 text-lg">
           Help us find a loving home for this pet
         </p>
       </div>
@@ -125,8 +116,8 @@ const AddPetForm = () => {
         {({ setFieldValue, values, errors, touched }) => (
           <Form className="space-y-8">
             {/* Image Upload */}
-            <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-xl border border-teal-200">
-              <label className="block text-gray-700 font-medium mb-2">
+            <div className="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl border border-teal-200 dark:border-gray-600">
+              <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
                 Pet Image
               </label>
               <input
@@ -140,26 +131,26 @@ const AddPetForm = () => {
                     handleImageUpload(file);
                   }
                 }}
-                className="border border-gray-300 rounded-md p-2 w-full"
+                className="border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md p-2 w-full"
               />
               {imagePreview && (
                 <img
                   src={imagePreview}
-                  className="h-48 w-48 object-cover mt-4 rounded-xl border"
+                  className="h-48 w-48 object-cover mt-4 rounded-xl border dark:border-gray-600"
                   alt="Preview"
                 />
               )}
             </div>
 
             {/* Basic Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-xl border border-teal-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gradient-to-r from-teal-50 to-teal-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl border border-teal-200 dark:border-gray-600">
               <div>
-                <label className="block text-gray-700 font-medium mb-1">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
                   Pet Name
                 </label>
                 <Field
                   name="petName"
-                  className="w-full border p-2 rounded-md"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white p-2 rounded-md"
                 />
                 <ErrorMessage
                   name="petName"
@@ -169,13 +160,13 @@ const AddPetForm = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-1">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
                   Pet Age
                 </label>
                 <Field
                   name="petAge"
                   type="number"
-                  className="w-full border p-2 rounded-md"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white p-2 rounded-md"
                 />
                 <ErrorMessage
                   name="petAge"
@@ -185,13 +176,24 @@ const AddPetForm = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-gray-700 font-medium mb-1">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
                   Category
                 </label>
                 <Select
                   options={petCategories}
                   value={values.petCategory}
                   onChange={(option) => setFieldValue("petCategory", option)}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                  theme={(theme) => ({
+                    ...theme,
+                    borderRadius: 4,
+                    colors: {
+                      ...theme.colors,
+                      primary25: "#ccfbf1",
+                      primary: "#14b8a6",
+                    },
+                  })}
                 />
                 {touched.petCategory && errors.petCategory && (
                   <div className="text-red-500 text-sm mt-1">
@@ -201,12 +203,12 @@ const AddPetForm = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-gray-700 font-medium mb-1">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
                   Location
                 </label>
                 <Field
                   name="petLocation"
-                  className="w-full border p-2 rounded-md"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white p-2 rounded-md"
                 />
                 <ErrorMessage
                   name="petLocation"
@@ -218,13 +220,13 @@ const AddPetForm = () => {
 
             {/* Descriptions */}
             <div className="space-y-6">
-              <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-xl border border-teal-200">
-                <label className="block text-gray-700 font-medium mb-1">
+              <div className="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl border border-teal-200 dark:border-gray-600">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
                   Short Description
                 </label>
                 <Field
                   name="shortDescription"
-                  className="w-full border p-2 rounded-md"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white p-2 rounded-md"
                 />
                 <ErrorMessage
                   name="shortDescription"
@@ -233,8 +235,8 @@ const AddPetForm = () => {
                 />
               </div>
 
-              <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-xl border border-teal-200">
-                <label className="block text-gray-700 font-medium mb-1">
+              <div className="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl border border-teal-200 dark:border-gray-600">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
                   Long Description
                 </label>
                 <ReactQuill
@@ -253,7 +255,7 @@ const AddPetForm = () => {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white py-4 text-lg font-semibold rounded-xl shadow-md"
+              className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 dark:from-teal-500 dark:to-teal-600 hover:dark:from-teal-600 hover:dark:to-teal-700 text-white py-4 text-lg font-semibold rounded-xl shadow-md"
             >
               List Pet for Adoption
             </Button>

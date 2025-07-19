@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import { FaHandHoldingHeart } from "react-icons/fa";
@@ -21,7 +21,7 @@ const DonationCampaign = () => {
         const res = await axiosSecure.get(
           `/donations-campaigns?page=${pageParam}&limit=${LIMIT}`
         );
-        return res.data; // { campaigns: [], nextPage: 2, hasMore: true }
+        return res.data;
       },
       getNextPageParam: (lastPage) => {
         return lastPage.hasMore ? lastPage.nextPage : undefined;
@@ -39,7 +39,7 @@ const DonationCampaign = () => {
       { threshold: 1 }
     );
 
-    if (observerRef.current) observer.observe(observerRef.current);
+    if (observerRef.current) observer.observe(observerRef?.current);
 
     return () => {
       if (observerRef.current) observer.unobserve(observerRef?.current);
@@ -54,9 +54,11 @@ const DonationCampaign = () => {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ) || [];
 
+     
+
   return (
     <div className="max-w-7xl mx-auto mt-14 px-4 py-10">
-      <h2 className="text-3xl font-bold text-center mb-8">
+      <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-teal-100">
         Donation Campaigns
       </h2>
 
@@ -69,7 +71,7 @@ const DonationCampaign = () => {
           {allCampaigns.map((campaign) => (
             <div
               key={campaign._id}
-              className="bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden border dark:border-gray-700"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300"
             >
               <img
                 src={campaign.imageUrl}
@@ -77,28 +79,33 @@ const DonationCampaign = () => {
                 className="h-48 w-full object-cover"
               />
               <div className="p-4 space-y-2">
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-teal-50">
                   {campaign.petName}
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   Created At: {format(new Date(campaign.createdAt), "PPP")}
                 </p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  <strong>Max Donation:</strong> ${campaign.maxDonationAmount}
-                </p>
+                <div className="flex justify-between items-center">
+                  <p className="text-gray-600 dark:text-gray-300">
+                    <strong>Goal:</strong> ${campaign.maxDonationAmount}
+                  </p>
+                  <p className="text-teal-600 dark:text-teal-400 font-medium">
+                    <strong>Raised:</strong> ${campaign.donatedAmount || 0}
+                  </p>
+                </div>
                 <p className="text-gray-600 dark:text-gray-300">
                   <strong>Status:</strong>{" "}
                   {campaign.paused ? (
                     <span className="text-yellow-500">Paused</span>
                   ) : (
-                    <span className="text-green-600">Active</span>
+                    <span className="text-green-600 dark:text-green-400">Active</span>
                   )}
                 </p>
-                <p className="text-sm text-gray-700 dark:text-gray-400">
+                <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
                   {campaign.shortDescription}
                 </p>
                 <Link to={`/donation-campaigns/${campaign._id}`}>
-                  <Button className="mt-2 w-full flex items-center justify-center gap-2">
+                  <Button className="mt-4 w-full bg-teal-600 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-800 text-white flex items-center justify-center gap-2 transition-colors">
                     <FaHandHoldingHeart /> View Details
                   </Button>
                 </Link>
@@ -114,7 +121,10 @@ const DonationCampaign = () => {
         className="h-10 flex items-center justify-center mt-6"
       >
         {isFetchingNextPage && (
-          <span className="text-gray-500">Loading more...</span>
+          <span className="text-teal-600 dark:text-teal-400">Loading more campaigns...</span>
+        )}
+        {!hasNextPage && !isLoading && (
+          <span className="text-gray-500 dark:text-gray-400">No more campaigns to load</span>
         )}
       </div>
     </div>

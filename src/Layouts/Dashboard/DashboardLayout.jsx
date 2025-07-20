@@ -260,7 +260,7 @@ const DashboardLayout = () => {
             <div className="flex items-center space-x-3 p-3 rounded-lg bg-teal-50 dark:bg-gray-700">
               <Avatar className="h-10 w-10 border-2 border-teal-200 dark:border-teal-700">
                 {dbUser?.photoURL ? (
-                  <AvatarImage src={dbUser.photoURL} />
+                  <AvatarImage src={dbUser.photoURL} className="object-cover" />
                 ) : (
                   <AvatarFallback className="bg-teal-100 dark:bg-teal-800 text-teal-600 dark:text-teal-300">
                     {dbUser?.name?.charAt(0) || "U"}
@@ -321,7 +321,7 @@ const DashboardLayout = () => {
               <Dark />
             </div>
 
-            <Button
+            {/* <Button
               variant="ghost"
               size="icon"
               className="rounded-full relative hover:bg-teal-50 dark:hover:bg-gray-700"
@@ -333,13 +333,13 @@ const DashboardLayout = () => {
                   {unreadNotifications}
                 </span>
               )}
-            </Button>
+            </Button> */}
 
             <Menu as="div" className="relative">
               <Menu.Button className="flex items-center space-x-2 focus:outline-none group">
                 <Avatar className="h-8 w-8 border-2 border-teal-200 dark:border-teal-700 group-hover:border-teal-300 dark:group-hover:border-teal-500 transition-colors">
                   {dbUser?.photoURL ? (
-                    <AvatarImage src={dbUser.photoURL} />
+                    <AvatarImage src={dbUser.photoURL} className="object-cover" />
                   ) : (
                     <AvatarFallback className="bg-teal-100 dark:bg-teal-800 text-teal-600 dark:text-teal-300">
                       {dbUser?.name?.charAt(0) || "U"}
@@ -391,22 +391,6 @@ const DashboardLayout = () => {
                         >
                           <User className="h-4 w-4 mr-2 text-teal-600 dark:text-teal-400" />
                           Your Profile
-                        </Link>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          to="/dashboard/settings"
-                          className={cn(
-                            active
-                              ? "bg-teal-50 text-teal-700 dark:bg-gray-700 dark:text-teal-400"
-                              : "text-gray-700 dark:text-gray-300",
-                            "block px-4 py-2 text-sm flex items-center"
-                          )}
-                        >
-                          <Settings className="h-4 w-4 mr-2 text-teal-600 dark:text-teal-400" />
-                          Settings
                         </Link>
                       )}
                     </Menu.Item>

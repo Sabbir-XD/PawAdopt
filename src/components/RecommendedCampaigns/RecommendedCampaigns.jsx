@@ -12,7 +12,13 @@ const RecommendedCampaigns = ({ currentCampaignId }) => {
     queryKey: ["recommendedCampaigns"],
     queryFn: async () => {
       const res = await axiosSecure.get("/donations-campaigns/recommended");
-      return res.data.filter((c) => c._id !== currentCampaignId);
+
+      // ✅ Only filter out currentCampaignId if it's a valid ObjectId
+      return res.data.filter((c) =>
+        currentCampaignId && currentCampaignId.length === 24
+          ? c._id.toString() !== currentCampaignId
+          : true
+      );
     },
   });
 

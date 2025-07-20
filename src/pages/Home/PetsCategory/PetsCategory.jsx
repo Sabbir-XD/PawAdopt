@@ -170,7 +170,7 @@ const PetCategory = () => {
                       <div
                         className={`bg-gradient-to-br ${
                           cat.color
-                        } rounded-2xl overflow-hidden shadow-xl h-[300px] md:h-[400px] flex flex-col transition-all duration-300 ${
+                        } rounded-2xl overflow-hidden shadow-xl h-[400px] flex flex-col transition-all duration-300 ${
                           pos === "center" ? "cursor-default" : "cursor-pointer"
                         }`}
                         onClick={() => pos !== "center" && goToSlide(i)}

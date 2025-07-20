@@ -23,7 +23,7 @@ const ManagePet = () => {
   const deletePetMutation = useMutation({
     mutationFn: (id) => axiosSecure.delete(`/pets/${id}`),
     onSuccess: () => {
-      toast.success("Pet deleted");
+      toast.success("Pet deleted successfully");
       queryClient.invalidateQueries(["pets"]);
     },
     onError: () => toast.error("Failed to delete pet"),
@@ -34,10 +34,10 @@ const ManagePet = () => {
     mutationFn: ({ id, updatedData }) =>
       axiosSecure.patch(`/pets/${id}`, updatedData),
     onSuccess: () => {
-      toast.success("Pet updated");
+      toast.success("Pet status updated");
       queryClient.invalidateQueries(["pets"]);
     },
-    onError: () => toast.error("Failed to update pet"),
+    onError: () => toast.error("Failed to update pet status"),
   });
 
   // Toggle adopted status handler
@@ -55,69 +55,92 @@ const ManagePet = () => {
     }
   };
 
-  if (isLoading) return <div>Loading pets...</div>;
+  if (isLoading) return <div className="text-center py-8">Loading pets...</div>;
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">All Pets (Admin)</h1>
-      <div className="overflow-x-auto border rounded-lg">
-        <table className="min-w-full text-left text-sm">
-          <thead className="bg-gray-100">
+      <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+        Manage Pets
+      </h1>
+      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
-              <th className="p-3 border-b">#</th>
-              <th className="p-3 border-b">Name</th>
-              <th className="p-3 border-b">Image</th>
-              <th className="p-3 border-b">Category</th>
-              <th className="p-3 border-b">Status</th>
-              <th className="p-3 border-b">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                #
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Image
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Category
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
             {pets.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-4 text-center text-gray-500">
-                  No pets found.
+                <td
+                  colSpan={6}
+                  className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
+                >
+                  No pets found in the database.
                 </td>
               </tr>
             )}
             {pets.map((pet, idx) => (
               <tr
                 key={pet._id}
-                className="hover:bg-gray-50 border-b last:border-b-0"
+                className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
-                <td className="p-3">{idx + 1}</td>
-                <td className="p-3 font-semibold">{pet.name}</td>
-                <td className="p-3 font-semibold">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {idx + 1}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {pet.name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
                   <img
                     src={pet?.imageUrl}
-                    alt="pet"
-                    className="h-12 w-12 rounded object-cover"
+                    alt={pet.name}
+                    className="h-12 w-12 rounded-full object-cover border border-gray-200 dark:border-gray-600"
                   />
                 </td>
-                <td className="p-3 capitalize">{pet.category}</td>
-                <td className="p-3">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 capitalize">
+                  {pet.category}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-3 py-1 rounded-full font-semibold select-none ${
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
                       pet.adopted
-                        ? "bg-green-200 text-green-800"
-                        : "bg-yellow-200 text-yellow-800"
+                        ? "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200"
+                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                     }`}
                   >
-                    {pet.adopted ? "Adopted" : "not adopted"}
+                    {pet.adopted ? "Adopted" : "Available"}
                   </span>
                 </td>
-                <td className="p-3 space-x-2">
+                <td className="px-6 py-4 whitespace-nowrap space-x-2">
                   <Button
-                    onClick={() =>
-                      navigate(`/dashboard/update-pet/${pet?._id}`)
-                    }
-                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => navigate(`/dashboard/update-pet/${pet?._id}`)}
+                    className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white"
+                    size="sm"
                   >
                     Edit
                   </Button>
                   <Button
                     onClick={() => handleDelete(pet._id)}
-                    className="bg-red-600 hover:bg-red-700"
+                    className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white"
+                    size="sm"
                   >
                     Delete
                   </Button>
@@ -125,11 +148,12 @@ const ManagePet = () => {
                     onClick={() => toggleAdopted(pet)}
                     className={`${
                       pet.adopted
-                        ? "bg-yellow-500 hover:bg-yellow-600"
-                        : "bg-green-500 hover:bg-green-600"
-                    }`}
+                        ? "bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700"
+                        : "bg-teal-500 hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-700"
+                    } text-white`}
+                    size="sm"
                   >
-                    {pet.adopted ? "Mark as Available" : "Mark as Adopted"}
+                    {pet.adopted ? "Make Available" : "Mark Adopted"}
                   </Button>
                 </td>
               </tr>

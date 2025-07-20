@@ -118,3 +118,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* In your global CSS (optional override if inline style can't be removed) */
+.dark .prose * {
+  color: #e5e7eb !important; /* Tailwind's gray-200 */
+}

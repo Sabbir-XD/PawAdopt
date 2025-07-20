@@ -24,6 +24,7 @@ import AllDonationsManage from "@/pages/Dashboard/AdminDashboard/AllDonationsMan
 import MyDonations from "@/pages/Dashboard/MyDonations/MyDonations";
 import MyAdoptionRequests from "@/pages/Dashboard/MyAdoptionRequests/MyAdoptionRequests";
 import PetByCategory from "@/pages/Home/PetsCategory/PetByCategory/PetByCategory";
+import Profile from "@/pages/Dashboard/Profile/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -170,6 +171,14 @@ export const router = createBrowserRouter([
           <AdminRoutes>
             <AllDonationsManage />
           </AdminRoutes>
+        ),
+      },
+      {
+        path: "/dashboard/profile",
+        element: (
+          <PrivetRoute>
+            <Profile />
+          </PrivetRoute>
         ),
       },
     ],

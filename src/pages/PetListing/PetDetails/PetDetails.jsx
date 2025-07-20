@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Dialog } from "@headlessui/react";
-import { FaPhoneAlt, FaMapMarkerAlt, FaPaw, FaHeart, FaArrowLeft } from "react-icons/fa";
+import {
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+  FaPaw,
+  FaHeart,
+  FaArrowLeft,
+} from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import { CardSkeleton } from "@/components/Loading/Loading";
@@ -32,9 +38,7 @@ const PetDetails = () => {
   const pet = pets.find((item) => item._id === petId);
 
   if (!pet)
-    return (
-      <div className="text-center text-red-500 py-20">Pet not found</div>
-    );
+    return <div className="text-center text-red-500 py-20">Pet not found</div>;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,7 +100,9 @@ const PetDetails = () => {
           <button
             onClick={() => setIsFavorite(!isFavorite)}
             className="absolute top-4 right-4 p-3 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-md hover:scale-110 transition-transform"
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
           >
             {isFavorite ? (
               <FaHeart className="text-pink-500 text-xl" />
@@ -130,24 +136,41 @@ const PetDetails = () => {
               </div>
             </div>
 
-            <div className="prose dark:prose-invert max-w-none mb-8">
+            <div className="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 mb-8">
               <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3">
                 About {pet.name}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-gray-600 dark:text-gray-200 mb-4">
                 {pet.shortDescription}
               </p>
-              <div dangerouslySetInnerHTML={{ __html: pet.longDescription }} />
+              <div
+                className="text-gray-800 dark:text-gray-200"
+                dangerouslySetInnerHTML={{ __html: pet.longDescription }}
+              />
             </div>
           </div>
 
           <div className="mt-auto">
-            <Button
-              onClick={() => setIsOpen(true)}
-              className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 dark:from-teal-700 dark:to-cyan-700 dark:hover:from-teal-800 dark:hover:to-cyan-800"
-            >
-              Adopt {pet.name}
-            </Button>
+            {user?.email === pet?.email ? (
+              <div className="text-center">
+                <Button
+                  disabled
+                  className="w-full py-6 text-lg font-semibold bg-gray-400 cursor-not-allowed dark:bg-gray-600 text-white"
+                >
+                  You can't adopt your own pet
+                </Button>
+                <p className="text-sm mt-2 text-gray-600 dark:text-gray-400 italic">
+                  🐾 Be patient! Someone will give your pet a loving home.
+                </p>
+              </div>
+            ) : (
+              <Button
+                onClick={() => setIsOpen(true)}
+                className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 dark:from-teal-700 dark:to-cyan-700 dark:hover:from-teal-800 dark:hover:to-cyan-800"
+              >
+                Adopt {pet.name}
+              </Button>
+            )}
           </div>
         </div>
       </motion.div>
@@ -158,7 +181,10 @@ const PetDetails = () => {
         onClose={() => setIsOpen(false)}
         className="relative z-50"
       >
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+          aria-hidden="true"
+        />
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-xl">
             <Dialog.Title className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">

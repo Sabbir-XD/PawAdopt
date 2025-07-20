@@ -36,29 +36,55 @@ const AllUsersPage = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">All Users</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full border">
-          <thead className="bg-gray-100 text-left">
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+        All Users
+      </h2>
+      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
-              <th className="p-2">#</th>
-              <th className="p-2">Name</th>
-              <th className="p-2">Email</th>
-              <th className="p-2">Role</th>
-              <th className="p-2">Action</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                #
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Email
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Role
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Action
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
             {users.map((u, index) => (
-              <tr key={u._id} className="border-b">
-                <td className="p-2">{index + 1}</td>
-                <td className="p-2">{u.name || "No name"}</td>
-                <td className="p-2">{u.email}</td>
-                <td className="p-2 capitalize">{u.role || "user"}</td>
-                <td className="p-2">
+              <tr
+                key={u._id}
+                className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {index + 1}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                  {u.name || "No name"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                  {u.email}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 capitalize">
+                  {u.role || "user"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
                   {u.role !== "admin" && (
-                    <Button onClick={() => handleMakeAdmin(u._id)}>
+                    <Button
+                      onClick={() => handleMakeAdmin(u._id)}
+                      className="bg-teal-600 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-800 text-white"
+                    >
                       Make Admin
                     </Button>
                   )}

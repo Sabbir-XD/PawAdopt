@@ -67,7 +67,6 @@ const adminExtraItems = [
 const DashboardLayout = () => {
   const { user, handleLogoutUser } = UseAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const location = useLocation();
   const navigate = useNavigate();
@@ -97,20 +96,6 @@ const DashboardLayout = () => {
     },
   });
 
-  // Fetch notifications count
-  useQuery({
-    enabled: !!user?.email,
-    queryKey: ["notifications", user?.email],
-    queryFn: async () => {
-      const res = await axiosSecure.get(
-        `/notifications/unread-count?user=${user.email}`
-      );
-      setUnreadNotifications(res.data.count);
-      return res.data;
-    },
-    refetchInterval: 300000, // Refetch every 5 minutes
-  });
-
   if (isLoading) {
     return <CardSkeleton count={1} />;
   }
@@ -124,6 +109,8 @@ const DashboardLayout = () => {
     <div
       className={`flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300`}
     >
+      <ToastContainer position="top-right" autoClose={2000} />
+
       {/* Mobile sidebar */}
       <Transition
         show={sidebarOpen}
@@ -174,11 +161,11 @@ const DashboardLayout = () => {
                     )}
                   />
                   {item.name}
-                  {item.badge && unreadNotifications > 0 && (
+                  {/* {item.badge && unreadNotifications > 0 && (
                     <Badge className="ml-auto bg-rose-500 dark:bg-rose-600 hover:bg-rose-600 dark:hover:bg-rose-700">
                       {unreadNotifications}
                     </Badge>
-                  )}
+                  )} */}
                 </Link>
               ))}
             </nav>
@@ -247,11 +234,6 @@ const DashboardLayout = () => {
                     )}
                   />
                   {item.name}
-                  {item.badge && unreadNotifications > 0 && (
-                    <Badge className="ml-auto bg-rose-500 dark:bg-rose-600 hover:bg-rose-600 dark:hover:bg-rose-700">
-                      {unreadNotifications}
-                    </Badge>
-                  )}
                 </Link>
               ))}
             </nav>
@@ -321,25 +303,14 @@ const DashboardLayout = () => {
               <Dark />
             </div>
 
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full relative hover:bg-teal-50 dark:hover:bg-gray-700"
-              onClick={() => navigate("/dashboard/notifications")}
-            >
-              <Bell className="h-5 w-5 text-teal-600 dark:text-teal-400" />
-              {unreadNotifications > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-rose-500 text-white text-xs flex items-center justify-center">
-                  {unreadNotifications}
-                </span>
-              )}
-            </Button> */}
-
             <Menu as="div" className="relative">
               <Menu.Button className="flex items-center space-x-2 focus:outline-none group">
                 <Avatar className="h-8 w-8 border-2 border-teal-200 dark:border-teal-700 group-hover:border-teal-300 dark:group-hover:border-teal-500 transition-colors">
                   {dbUser?.photoURL ? (
-                    <AvatarImage src={dbUser.photoURL} className="object-cover" />
+                    <AvatarImage
+                      src={dbUser.photoURL}
+                      className="object-cover"
+                    />
                   ) : (
                     <AvatarFallback className="bg-teal-100 dark:bg-teal-800 text-teal-600 dark:text-teal-300">
                       {dbUser?.name?.charAt(0) || "U"}

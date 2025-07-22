@@ -123,3 +123,12 @@
 .dark .prose * {
   color: #e5e7eb !important; /* Tailwind's gray-200 */
 }
+
+/* components/tiptap.css */
+.ProseMirror {
+  outline: none;
+  white-space: pre-wrap;
+  color: inherit;
+  min-height: 150px;
+}
+

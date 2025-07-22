@@ -25,11 +25,14 @@ const PetListing = () => {
   // Available categories - "all" is now a valid value
   const categories = [
     { value: "all", label: "All Pets" },
-    { value: "dog", label: "Dogs" },
-    { value: "cat", label: "Cats" },
-    { value: "bird", label: "Birds" },
-    { value: "rabbit", label: "Rabbits" },
-    { value: "other", label: "Other" },
+    { value: "dog", label: "🐕 Dog" },
+    { value: "cat", label: "🐈 Cat" },
+    { value: "bird", label: "🦜 Bird" },
+    { value: "fish", label: "🐠 Fish" },
+    { value: "rabbit", label: "🐇 Rabbit" },
+    { value: "hamster", label: "🐹 Hamster" },
+    { value: "cow", label: "🐄 Cow" },
+    { value: "other", label: "🐾 Other" },
   ];
 
   // Infinite scroll query - adjust API call to handle "all" category

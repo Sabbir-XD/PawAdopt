@@ -25,11 +25,13 @@ import MyDonations from "@/pages/Dashboard/MyDonations/MyDonations";
 import MyAdoptionRequests from "@/pages/Dashboard/MyAdoptionRequests/MyAdoptionRequests";
 import PetByCategory from "@/pages/Home/PetsCategory/PetByCategory/PetByCategory";
 import Profile from "@/pages/Dashboard/Profile/Profile";
+import ErrorComponent from "@/components/ErrorComponent/ErrorComponent";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
+    errorElement: <ErrorComponent />,
     children: [
       {
         index: true,
@@ -80,6 +82,7 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <DashboardLayout />,
+    errorElement: <ErrorComponent />,
     children: [
       {
         index: true,

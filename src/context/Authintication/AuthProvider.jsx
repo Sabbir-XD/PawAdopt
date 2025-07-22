@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import {
   createUserWithEmailAndPassword,
+  GithubAuthProvider,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -17,10 +18,15 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const provider = new GoogleAuthProvider();
+  const GithubProvider = new GithubAuthProvider();
 
   const handleGoogleLoginUser = () => {
     setLoading(true);
     return signInWithPopup(auth, provider);
+  };
+
+  const handleGitHubLoginUser = () => {
+    return signInWithPopup(auth, GithubProvider);
   };
 
   const handleCreateUser = (email, password) => {
@@ -62,15 +68,15 @@ const AuthProvider = ({ children }) => {
         // ✅ Send JWT request (must be after saving user)
         axios
           .post(
-            "http://localhost:5000/jwt",
+            "https://assaignment-12-backend-ih48mopag-sabbir-xds-projects.vercel.app/jwt",
             { email: currentUser?.email },
             { withCredentials: true }
           )
           .then((res) => {
-            console.log("token after jWT", res.data);
+            // console.log("token after jWT", res.data);
           })
           .catch((error) => {
-            console.log(error);
+            console.error(error);
           });
       }
     });
@@ -86,6 +92,7 @@ const AuthProvider = ({ children }) => {
     handleUpdateProfile,
     handleLoginUser,
     handleGoogleLoginUser,
+    handleGitHubLoginUser,
     handleLogoutUser,
   };
 

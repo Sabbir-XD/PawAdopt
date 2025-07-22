@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 const ManagePet = () => {
   const axiosSecure = useAxiosSecure();
@@ -50,10 +51,22 @@ const ManagePet = () => {
 
   // Delete pet handler
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this pet?")) {
-      deletePetMutation.mutate(id);
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#14b8a6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deletePetMutation.mutate(id);
+        Swal.fire("Deleted!", "Your pet has been deleted.", "success");
+      }
+    });
   };
+  
 
   if (isLoading) return <div className="text-center py-8">Loading pets...</div>;
 

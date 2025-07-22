@@ -17,7 +17,7 @@ const petCategories = [
   { value: "fish", label: "🐠 Fish" },
   { value: "rabbit", label: "🐇 Rabbit" },
   { value: "hamster", label: "🐹 Hamster" },
-  { value: "reptile", label: "🦎 Reptile" },
+  { value: "cow", label: "🐄 Cow" },
   { value: "other", label: "🐾 Other" },
 ];
 
@@ -92,6 +92,7 @@ const AddPetForm = () => {
       setUploadedImage("");
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
+      resetForm();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add pet");
     }
@@ -176,14 +177,14 @@ const AddPetForm = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
+                <label className="block text-gray-700 dark:text-gray-700 font-medium mb-1">
                   Category
                 </label>
                 <Select
                   options={petCategories}
                   value={values.petCategory}
                   onChange={(option) => setFieldValue("petCategory", option)}
-                  className="react-select-container"
+                  className="react-select-container dark:text-gray-700"
                   classNamePrefix="react-select"
                   theme={(theme) => ({
                     ...theme,

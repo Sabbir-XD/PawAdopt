@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { useInView } from "react-intersection-observer";
 import { useState, useEffect } from "react";
+import { Link } from "react-router";
 
 const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -120,14 +121,16 @@ const Banner = () => {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4">
-                      <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="flex items-center gap-3 bg-teal-500 hover:bg-teal-600 text-white font-bold px-8 py-3 rounded-lg shadow-lg transition-all dark:bg-teal-600 dark:hover:bg-teal-700"
-                      >
-                        <FaSearch />
-                        {slide.cta}
-                      </motion.button>
+                      <Link to="/pet-listing">
+                        <motion.button
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="flex items-center gap-3 bg-teal-500 hover:bg-teal-600 text-white font-bold px-8 py-3 rounded-lg shadow-lg transition-all dark:bg-teal-600 dark:hover:bg-teal-700"
+                        >
+                          <FaSearch />
+                          {slide.cta}
+                        </motion.button>
+                      </Link>
 
                       <motion.button
                         whileHover={{ scale: 1.03 }}

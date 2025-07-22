@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from "react-router";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 
 const SocialLogin = () => {
-  const { handleGoogleLoginUser } = UseAuth();
+  const { handleGoogleLoginUser, handleGitHubLoginUser } = UseAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const axiosSecure = useAxiosSecure();
@@ -16,7 +16,6 @@ const SocialLogin = () => {
   const googleLogin = () => {
     handleGoogleLoginUser()
       .then((result) => {
-        console.log(result.user);
         const data = result.user;
 
         const dataUser = {
@@ -28,16 +27,16 @@ const SocialLogin = () => {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        
-        axiosSecure.put("/users", dataUser).then((data) => {
-          console.log(data);
-        }).catch((error) => {
-          console.log(error);
-        })
 
+        axiosSecure
+          .put("/users", dataUser)
+          .then((data) => {})
+          .catch((error) => {
+            console.error("Error updating user data:", error);
+            toast.error("Failed to update user data!");
+          });
 
         // setUser(dataUser);
-        console.log(dataUser);
         toast.success("Google Login successful!");
         navigate(location?.state || "/");
       })
@@ -45,6 +44,38 @@ const SocialLogin = () => {
         console.error(error);
       });
   };
+
+  const githubLogin = () => {
+    handleGitHubLoginUser()
+      .then((result) => {
+        const data = result.user;
+
+        const dataUser = {
+          name: data.displayName || "GitHub User",
+          email: data.email,
+          role: "user",
+          photoURL: data.photoURL,
+          uid: data.uid,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        axiosSecure
+          .put("/users", dataUser)
+          .then(() => {
+            toast.success("GitHub Login successful!");
+            navigate(location?.state || "/");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("GitHub Login failed!");
+      });
+  };
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <Button
@@ -56,6 +87,7 @@ const SocialLogin = () => {
         Google
       </Button>
       <Button
+        onClick={githubLogin}
         variant="outline"
         className="flex items-center justify-center border-teal-300 hover:bg-teal-50"
       >

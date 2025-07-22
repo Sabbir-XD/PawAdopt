@@ -42,7 +42,9 @@ const DonationDetails = () => {
     return (
       <div className="max-w-5xl mx-auto text-center py-20">
         <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-6 rounded-lg inline-block max-w-md">
-          <h3 className="text-xl font-semibold mb-2">Unable to load campaign</h3>
+          <h3 className="text-xl font-semibold mb-2">
+            Unable to load campaign
+          </h3>
           <p>Please check the URL or try again later.</p>
           <Link
             to="/donation-campaigns"
@@ -125,13 +127,17 @@ const DonationDetails = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Created</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Created
+              </p>
               <p className="font-medium dark:text-teal-100">
                 {format(new Date(campaign.createdAt), "MMM d, yyyy")}
               </p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Deadline</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Deadline
+              </p>
               <p
                 className={`font-medium ${
                   isExpired
@@ -192,13 +198,19 @@ const DonationDetails = () => {
         </div>
       </div>
 
-      <DonationModal isOpen={isOpen} setIsOpen={setIsOpen} campaign={campaign} />
+      <DonationModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        campaign={campaign}
+      />
 
       <div className="mt-20">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-teal-100 mb-8">
           Other Campaigns You Might Like
         </h2>
-        <RecommendedCampaigns currentCampaignId={id} />
+        <div className="">
+          <RecommendedCampaigns currentCampaignId={campaign?._id} />
+        </div>
       </div>
     </div>
   );

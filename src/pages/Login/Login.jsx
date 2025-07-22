@@ -35,7 +35,6 @@ const Login = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("Login Data:", data);
     // TODO: Call your login handler here
     handleLoginUser(data.email, data.password)
       .then((result) => {
@@ -50,10 +49,10 @@ const Login = () => {
         axiosSecure
           .put("/users", userData)
           .then((data) => {
-            console.log(data);
+            // console.log(data);
           })
           .catch((error) => {
-            console.log(error);
+            // console.log(error);
           });
 
         navigate(location?.state || "/");

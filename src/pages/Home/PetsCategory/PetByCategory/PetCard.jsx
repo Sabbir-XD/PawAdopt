@@ -1,6 +1,7 @@
 import { FaMapMarkerAlt, FaHeart, FaRegHeart } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Link } from "react-router";
 
 const PetCard = ({ pet, isMobile = false }) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -32,7 +33,7 @@ const PetCard = ({ pet, isMobile = false }) => {
             <FaRegHeart className="text-gray-700 dark:text-gray-300" />
           )}
         </button>
-        
+
         {/* Location badge */}
         <div className="absolute bottom-3 left-3 bg-white/90 dark:bg-gray-900/90 px-3 py-1 rounded-full text-xs font-medium text-gray-800 dark:text-gray-200 flex items-center gap-1">
           <FaMapMarkerAlt className="text-teal-500 dark:text-teal-400" />
@@ -58,7 +59,7 @@ const PetCard = ({ pet, isMobile = false }) => {
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mt-4">
           {pet.tags?.slice(0, 3).map((tag) => (
-            <span 
+            <span
               key={tag}
               className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full"
             >
@@ -69,21 +70,26 @@ const PetCard = ({ pet, isMobile = false }) => {
 
         {/* View button - only shows on hover for desktop */}
         {!isMobile && (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={isHovered ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
+          <Link to={`/pet-listing/${pet?._id}`}>
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={isHovered ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="w-full mt-4 bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors"
+            >
+              View Details
+            </motion.button>
+          </Link>
+        )}
+
+        {/* Always show button on mobile */}
+        {isMobile && (
+          <Link
+            to={`/pet-listing/${pet?._id}`}
             className="w-full mt-4 bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors"
           >
             View Details
-          </motion.button>
-        )}
-        
-        {/* Always show button on mobile */}
-        {isMobile && (
-          <button className="w-full mt-4 bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
-            View Details
-          </button>
+          </Link>
         )}
       </div>
     </motion.div>

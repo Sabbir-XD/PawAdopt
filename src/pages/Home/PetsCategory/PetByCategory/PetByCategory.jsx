@@ -5,6 +5,7 @@ import PetCard from "./PetCard";
 import { FaPaw, FaSearch, FaHeart } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { CardSkeleton } from "@/components/Loading/Loading";
 
 const PetByCategory = () => {
   const { name } = useParams();
@@ -31,19 +32,9 @@ const PetByCategory = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center p-4">
-        <div className="flex flex-col items-center gap-4">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          >
-            <FaPaw className="text-4xl text-teal-600 dark:text-teal-400" />
-          </motion.div>
-          <p className="text-gray-600 dark:text-gray-300 text-center">
-            Loading {name} pets...
-          </p>
-        </div>
-      </div>
+     <div>
+       <CardSkeleton count={3} />
+     </div>
     );
   }
 

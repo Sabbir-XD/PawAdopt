@@ -68,7 +68,7 @@ const AuthProvider = ({ children }) => {
         // ✅ Send JWT request (must be after saving user)
         axios
           .post(
-            "https://assaignment-12-backend-ih48mopag-sabbir-xds-projects.vercel.app/jwt",
+            "https://assaignment-12-backend.vercel.app/jwt",
             { email: currentUser?.email },
             { withCredentials: true }
           )

@@ -4,6 +4,7 @@ import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import { useEffect, useState } from "react";
 import { FaArrowLeft, FaArrowRight, FaPaw } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { CardSkeleton } from "@/components/Loading/Loading";
 
 const PetCategory = () => {
   const axiosSecure = useAxiosSecure();
@@ -97,7 +98,7 @@ const PetCategory = () => {
 
         {isLoading || categories.length === 0 ? (
           <p className="text-center text-gray-500 dark:text-gray-400">
-            Loading...
+            <CardSkeleton count={3} />
           </p>
         ) : (
           <div className="relative h-[400px]">

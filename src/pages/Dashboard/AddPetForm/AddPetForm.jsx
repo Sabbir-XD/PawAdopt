@@ -24,6 +24,7 @@ const petCategories = [
 const AddPetForm = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadedImage, setUploadedImage] = useState("");
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
   const axiosSecure = useAxiosSecure();
   const { user } = UseAuth();
@@ -55,6 +56,7 @@ const AddPetForm = () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "petcare");
+    setUploading(true);
     try {
       const res = await axios.post(
         "https://api.cloudinary.com/v1_1/ddgcar30i/image/upload",
@@ -64,10 +66,17 @@ const AddPetForm = () => {
       toast.success("Image uploaded successfully");
     } catch {
       toast.error("Image upload failed");
+    } finally {
+      setUploading(false);
     }
   };
 
   const handleSubmit = async (values, { resetForm }) => {
+    if (uploading) {
+      toast.warning("Image is still uploading. Please wait...");
+      return;
+    }
+
     if (!uploadedImage) {
       toast.error("Please upload an image first");
       return;
@@ -256,9 +265,15 @@ const AddPetForm = () => {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 dark:from-teal-500 dark:to-teal-600 hover:dark:from-teal-600 hover:dark:to-teal-700 text-white py-4 text-lg font-semibold rounded-xl shadow-md"
+              disabled={uploading}
+              className={`w-full py-4 text-lg font-semibold rounded-xl shadow-md text-white 
+              ${
+                uploading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 dark:from-teal-500 dark:to-teal-600 hover:dark:from-teal-600 hover:dark:to-teal-700"
+              }`}
             >
-              List Pet for Adoption
+              {uploading ? "Uploading Image..." : "List Pet for Adoption"}
             </Button>
           </Form>
         )}

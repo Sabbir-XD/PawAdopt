@@ -170,6 +170,47 @@ const MyAddedPets = () => {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  // Empty state handling
+  if (!isLoading && !isError && pets.length === 0) {
+    return (
+      <div className="p-4 max-w-6xl mx-auto text-center">
+        <h2 className="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-4">
+          My Added Pets
+        </h2>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+          <div className="max-w-md mx-auto">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                vectorEffect="non-scaling-stroke"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">
+              No pets found
+            </h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              You haven't added any pets yet. Get started by adding a new pet.
+            </p>
+            <div className="mt-6">
+              <Button onClick={() => navigate("/dashboard/add-pet")}>
+                Add New Pet
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-4">

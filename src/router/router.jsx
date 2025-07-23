@@ -8,7 +8,6 @@ import Dashboard from "@/pages/Dashboard/Dashboard/Dashboard";
 import AddPetForm from "@/pages/Dashboard/AddPetForm/AddPetForm";
 import PrivetRoute from "@/Routes/PrivetRoutes/PrivetRoutes";
 import MyAddedPets from "@/pages/Dashboard/MyAddedPets/MyAddedPets";
-import { TableRowSkeleton } from "@/components/Loading/Loading";
 import UpdatePetForm from "@/pages/Dashboard/UpdatePetForm/UpdatePetForm";
 import CreateDonationCampaign from "@/pages/Dashboard/CreateDonationCampaign/CreateDonationCampaign";
 import MyDonationCampaigns from "@/pages/Dashboard/MyDonationCampaigns/MyDonationCampaigns";
@@ -99,7 +98,7 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/my-pets",
         element: (
-          <PrivetRoute skeleton={<TableRowSkeleton count={5} />}>
+          <PrivetRoute>
             <MyAddedPets />
           </PrivetRoute>
         ),

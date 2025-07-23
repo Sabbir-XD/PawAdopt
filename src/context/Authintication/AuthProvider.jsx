@@ -50,7 +50,7 @@ const AuthProvider = ({ children }) => {
       // ✅ Optional Firebase logout (if using Firebase Auth)
       await signOut(auth);
       setUser(null);
-
+      localStorage.removeItem("access-token");
       toast.success("Signed out successfully!");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -67,13 +67,13 @@ const AuthProvider = ({ children }) => {
       if (currentUser?.email) {
         // ✅ Send JWT request (must be after saving user)
         axios
-          .post(
-            "https://assaignment-12-backend.vercel.app/jwt",
-            { email: currentUser?.email },
-            { withCredentials: true }
-          )
+          .post("https://assaignment-12-backend.vercel.app/jwt", {
+            email: currentUser?.email,
+          })
           .then((res) => {
             // console.log("token after jWT", res.data);
+            localStorage.setItem("access-token", res.data.token);
+            // toast.success("jwt token sent successfully");
           })
           .catch((error) => {
             console.error(error);

@@ -49,7 +49,9 @@ const AdoptionCTA = () => {
 
             <h2 className="text-4xl md:text-5xl font-bold leading-tight">
               Change a Life -{" "}
-              <span className="text-amber-300 dark:text-teal-500">Adopt Today</span>
+              <span className="text-amber-300 dark:text-teal-500">
+                Adopt Today
+              </span>
             </h2>
 
             <p className="text-lg md:text-xl opacity-90 dark:opacity-80">
@@ -71,7 +73,9 @@ const AdoptionCTA = () => {
                     {stat.icon}
                     <span className="text-2xl font-bold">{stat.value}</span>
                   </div>
-                  <div className="text-sm opacity-80 dark:opacity-90">{stat.label}</div>
+                  <div className="text-sm opacity-80 dark:opacity-90">
+                    {stat.label}
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -138,7 +142,9 @@ const AdoptionCTA = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent p-4 flex flex-col justify-end">
-                  <div className="text-white font-bold text-lg">The Rodriguez Family</div>
+                  <div className="text-white font-bold text-lg">
+                    The Rodriguez Family
+                  </div>
                   <div className="text-white/80 text-sm">Adopted 2021</div>
                 </div>
               </div>

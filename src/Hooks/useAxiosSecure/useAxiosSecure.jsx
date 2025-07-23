@@ -4,7 +4,6 @@ import UseAuth from "../UseAuth/UseAuth";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL, // Replace with your server URL
-  withCredentials: true,
 });
 const useAxiosSecure = () => {
   const { user, handleLogoutUser } = UseAuth();
@@ -16,29 +15,31 @@ const useAxiosSecure = () => {
       config
     ) {
       // Do something before request is sent
+      config.headers.Authorization = `Bearer ${localStorage.getItem("access-token")}`;
       return config;
     });
 
-
     //response interceptor
-  axiosInstance.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (error) => {
-      if (error?.response?.status === 401 || error?.response?.status === 403) {
-        handleLogoutUser();
+    axiosInstance.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      (error) => {
+        if (
+          error?.response?.status === 401 ||
+          error?.response?.status === 403
+        ) {
+          handleLogoutUser();
+        }
+        return Promise.reject(error);
       }
-      return Promise.reject(error);
-    }
-  );
+    );
 
-  // Cleanup to remove old interceptor
-  return () => {
-    axiosInstance.interceptors.request.eject(interceptor);
-  }
+    // Cleanup to remove old interceptor
+    return () => {
+      axiosInstance.interceptors.request.eject(interceptor);
+    };
   }, [user, handleLogoutUser]);
-
 
   return axiosInstance;
 };

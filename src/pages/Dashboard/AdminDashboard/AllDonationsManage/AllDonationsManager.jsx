@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { TableRowSkeleton } from "@/components/Loading/Loading";
 
 const columnHelper = createColumnHelper();
 
@@ -150,9 +151,9 @@ const AllDonationsManage = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Manage All Donation Campaigns</h2>
+      <h2 className="text-2xl font-bold mb-4 dark:text-teal-500">Manage All Donation Campaigns</h2>
 
-      {isLoading && <p className="text-gray-500">Loading...</p>}
+      {isLoading && <div className="text-gray-500"><TableRowSkeleton count={3} /></div>}
 
       {isError && (
         <p className="text-red-500">

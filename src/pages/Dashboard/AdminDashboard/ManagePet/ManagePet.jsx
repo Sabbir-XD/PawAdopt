@@ -72,7 +72,7 @@ const ManagePet = () => {
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+      <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-teal-600">
         Manage Pets
       </h1>
       <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">

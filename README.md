@@ -1,12 +1,52 @@
-# React + Vite
+# PawAdopt - Pet Adoption & Donation Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 Live Demo  
+🔗 [https://pawadopt-pet.web.app/](https://pawadopt-pet.web.app/)  
 
-Currently, two official plugins are available:
+## 🐾 About  
+PawAdopt is a full-featured pet adoption platform connecting pets with loving families. Built with the MERN stack, it enables pet listings, adoption requests, donation campaigns, and comprehensive admin management.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Key Features  
 
-## Expanding the ESLint configuration
+### For Pet Seekers  
+- Browse adoptable pets with filters  
+- Submit adoption requests  
+- Donate to pet medical campaigns  
+- Secure Stripe payment processing  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### For Pet Owners  
+- Create pet adoption listings  
+- Manage adoption applications  
+- Start fundraising campaigns  
+- Track donation progress  
+
+### Admin Panel  
+- Manage all users and pets  
+- Process adoption requests  
+- Monitor donations  
+- Assign admin privileges  
+
+## 🛠️ Technologies Used  
+
+**Frontend:**  
+- React.js (Vite)  
+- Tailwind CSS  
+- React Hook Form + Formik  
+- React Query  
+- Framer Motion  
+
+**Backend:**  
+- Node.js + Express  
+- MongoDB  
+- Firebase Auth  
+- Cloudinary  
+
+**Payment:**  
+- Stripe integration  
+
+## 📦 Installation  
+
+1. Clone repo:  
+```bash
+git clone https://github.com/your-username/pawadopt.git
+cd pawadopt

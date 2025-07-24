@@ -60,7 +60,8 @@ const DonationDetails = () => {
   const currentAmount = campaign.currentDonationAmount || 0;
   const maxAmount = campaign.maxDonationAmount || 1;
   const isExpired = isAfter(new Date(), new Date(campaign.deadline));
-  const isActive = !campaign.paused && !isExpired;
+  const isFullyFunded = currentAmount >= maxAmount; // NEW: fully funded check
+  const isActive = !campaign.paused && !isExpired && !isFullyFunded;
   const progressPercentage = Math.min((currentAmount / maxAmount) * 100, 100);
 
   return (
@@ -89,7 +90,13 @@ const DonationDetails = () => {
               <IoPlayCircle className="h-5 w-5 text-green-500 mr-1" />
             )}
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {isExpired ? "Expired" : campaign.paused ? "Paused" : "Active"}
+              {isExpired
+                ? "Expired"
+                : campaign.paused
+                ? "Paused"
+                : isFullyFunded
+                ? "Fully Funded"
+                : "Active"}
             </span>
           </div>
         </div>
@@ -176,6 +183,10 @@ const DonationDetails = () => {
           {user?.email === campaign?.createdBy ? (
             <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 p-4 rounded-xl text-center">
               🐾 You can't donate to your own campaign!
+            </div>
+          ) : isFullyFunded ? (
+            <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 p-4 rounded-xl text-center text-lg font-medium">
+              🎉 This campaign is fully funded! Thank you for your support!
             </div>
           ) : isActive ? (
             <Button

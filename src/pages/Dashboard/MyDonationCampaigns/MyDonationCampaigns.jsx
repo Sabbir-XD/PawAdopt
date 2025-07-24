@@ -24,13 +24,12 @@ const MyDonationCampaigns = () => {
     queryKey: ["donation-campaigns", user?.email],
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `/donations-campaigns?email=${user.email}`
+        `/donation-user-campaigns?email=${user?.email}`
       );
-      return res.data.campaigns;
+      return res.data;
     },
     enabled: !!user?.email,
   });
-
 
   // Mutation for toggling pause/resume
   const pauseMutation = useMutation({
@@ -64,22 +63,26 @@ const MyDonationCampaigns = () => {
   };
 
   if (isLoading)
-    return <div className="text-center text-gray-600">Loading...</div>;
+    return (
+      <div className="text-center text-gray-600 dark:text-gray-300">Loading...</div>
+    );
   if (isError)
     return (
-      <div className="text-center text-red-500">Failed to load campaigns</div>
+      <div className="text-center text-red-500 dark:text-red-400">
+        Failed to load campaigns
+      </div>
     );
 
   return (
     <div className="max-w-6xl mx-auto p-4">
-      <h2 className="text-3xl font-bold text-center text-emerald-600 mb-6">
+      <h2 className="text-3xl font-bold text-center text-emerald-600 dark:text-emerald-400 mb-6">
         My Donation Campaigns
       </h2>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full border rounded-lg bg-white shadow-md">
+        <table className="min-w-full border rounded-lg bg-white dark:bg-gray-900 shadow-md">
           <thead>
-            <tr className="bg-emerald-100 text-emerald-700">
+            <tr className="bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300">
               <th className="p-3 text-left">Pet Name</th>
               <th className="p-3 text-left">Max Donation</th>
               <th className="p-3 text-left">Image</th>
@@ -95,26 +98,31 @@ const MyDonationCampaigns = () => {
               ).toFixed(0);
 
               return (
-                <tr key={campaign._id} className="border-t">
-                  <td className="p-3 font-medium">
+                <tr
+                  key={campaign._id}
+                  className="border-t border-gray-300 dark:border-gray-700"
+                >
+                  <td className="p-3 font-medium text-gray-900 dark:text-gray-200">
                     {campaign.petName || "N/A"}
                   </td>
-                  <td className="p-3">${campaign.maxDonationAmount}</td>
+                  <td className="p-3 text-gray-800 dark:text-gray-300">
+                    ${campaign.maxDonationAmount}
+                  </td>
                   <td className="p-3">
                     <img
                       src={campaign?.imageUrl}
                       alt="pet"
-                      className="h-12 w-12 rounded object-cover"
+                      className="h-12 w-12 rounded object-cover border border-gray-200 dark:border-gray-700"
                     />
                   </td>
                   <td className="p-3">
-                    <div className="w-full bg-gray-200 rounded h-4">
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-4">
                       <div
-                        className="h-4 bg-emerald-500 rounded"
+                        className="h-4 bg-emerald-500 dark:bg-emerald-400 rounded transition-all duration-500 ease-in-out"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       ${campaign.totalDonated || 0} raised
                     </div>
                   </td>
@@ -123,7 +131,7 @@ const MyDonationCampaigns = () => {
                       onClick={() => togglePause(campaign._id, campaign.paused)}
                       className={`px-3 py-1 text-sm ${
                         campaign.paused ? "bg-yellow-500" : "bg-red-500"
-                      } text-white rounded`}
+                      } text-white rounded hover:opacity-90 transition`}
                     >
                       {campaign.paused ? "Resume" : "Pause"}
                     </Button>
@@ -132,14 +140,14 @@ const MyDonationCampaigns = () => {
                       onClick={() =>
                         navigate(`/dashboard/edit-donation/${campaign._id}`)
                       }
-                      className="bg-blue-500 text-white px-3 py-1 text-sm rounded"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 text-sm rounded transition"
                     >
                       Edit
                     </Button>
 
                     <Button
                       onClick={() => viewDonators(campaign._id)}
-                      className="bg-purple-500 text-white px-3 py-1 text-sm rounded"
+                      className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 text-sm rounded transition"
                     >
                       View Donators
                     </Button>
@@ -152,27 +160,29 @@ const MyDonationCampaigns = () => {
       </div>
 
       {/* Donators Modal */}
-      {modalOpen && (
-        <Modal onClose={() => setModalOpen(false)} title="Donators List">
-          {selectedDonators.length === 0 ? (
-            <p className="text-gray-600">No donations yet.</p>
-          ) : (
-            <ul className="space-y-2">
-              {selectedDonators.map((donor, idx) => (
-                <li
-                  key={idx}
-                  className="flex justify-between border-b py-1 text-sm"
-                >
-                  <span>{donor.name || donor.email}</span>
-                  <span className="font-semibold text-emerald-600">
-                    ${donor.amount}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Modal>
-      )}
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Donators List"
+      >
+        {selectedDonators.length === 0 ? (
+          <p className="text-gray-600 dark:text-gray-400">No donations yet.</p>
+        ) : (
+          <ul className="space-y-2 max-h-60 overflow-y-auto">
+            {selectedDonators.map((donor, idx) => (
+              <li
+                key={idx}
+                className="flex justify-between border-b border-gray-300 dark:border-gray-700 py-1 text-sm text-gray-800 dark:text-gray-200"
+              >
+                <span>{donor.name || donor.email}</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                  ${donor.amount}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Modal>
     </div>
   );
 };

@@ -201,12 +201,12 @@ const CreateDonationCampaign = () => {
               <label className="block font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Long Description
               </label>
-              <div className="bg-white dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 dark:text-white rounded-md overflow-hidden">
                 <ReactQuill
                   theme="snow"
                   value={values.longDescription}
                   onChange={(val) => setFieldValue("longDescription", val)}
-                  className="dark:text-white"
+                  className="dark:text-gray-200"
                 />
               </div>
               {touched.longDescription && errors.longDescription && (

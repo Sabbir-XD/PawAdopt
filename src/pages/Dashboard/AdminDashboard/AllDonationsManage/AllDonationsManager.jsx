@@ -75,7 +75,7 @@ const AllDonationsManage = () => {
   };
 
   const handleEdit = (id) => {
-    navigate(`/dashboard/edit-campaign/${id}`);
+    navigate(`/dashboard/edit-donation/${id}`);
   };
 
   const columns = [

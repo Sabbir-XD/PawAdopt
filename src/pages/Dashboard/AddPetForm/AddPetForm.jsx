@@ -23,7 +23,6 @@ const petCategories = [
 
 const AddPetForm = () => {
   const [imagePreview, setImagePreview] = useState(null);
-  const [uploadedImage, setUploadedImage] = useState("");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
   const axiosSecure = useAxiosSecure();
@@ -36,6 +35,7 @@ const AddPetForm = () => {
     petLocation: "",
     shortDescription: "",
     longDescription: "",
+    petImage: null, // Added for file handling
   };
 
   const validationSchema = Yup.object({
@@ -50,60 +50,54 @@ const AddPetForm = () => {
       .max(100, "Max 100 characters")
       .required("Short description is required"),
     longDescription: Yup.string().required("Long description is required"),
+    petImage: Yup.mixed().required("Pet image is required"),
   });
 
+  // Image Upload (only called during submit)
   const handleImageUpload = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "petcare");
-    setUploading(true);
-    try {
-      const res = await axios.post(
-        "https://api.cloudinary.com/v1_1/ddgcar30i/image/upload",
-        formData
-      );
-      setUploadedImage(res.data.secure_url);
-      toast.success("Image uploaded successfully");
-    } catch {
-      toast.error("Image upload failed");
-    } finally {
-      setUploading(false);
-    }
+    const res = await axios.post(
+      "https://api.cloudinary.com/v1_1/ddgcar30i/image/upload",
+      formData
+    );
+    return res.data.secure_url;
   };
 
   const handleSubmit = async (values, { resetForm }) => {
-    if (uploading) {
-      toast.warning("Image is still uploading. Please wait...");
+    if (!values.petImage) {
+      toast.error("Please select an image first");
       return;
     }
 
-    if (!uploadedImage) {
-      toast.error("Please upload an image first");
-      return;
-    }
-
-    const pet = {
-      name: values.petName,
-      email: user.email,
-      age: Number(values.petAge),
-      category: values.petCategory.value,
-      location: values.petLocation,
-      shortDescription: values.shortDescription,
-      longDescription: values.longDescription,
-      imageUrl: uploadedImage,
-      adopted: false,
-      createdAt: new Date().toISOString(),
-    };
-
+    setUploading(true);
     try {
+      // Upload image on submit
+      const uploadedUrl = await handleImageUpload(values.petImage);
+
+      const pet = {
+        name: values.petName,
+        email: user.email,
+        age: Number(values.petAge),
+        category: values.petCategory.value,
+        location: values.petLocation,
+        shortDescription: values.shortDescription,
+        longDescription: values.longDescription,
+        imageUrl: uploadedUrl,
+        adopted: false,
+        createdAt: new Date().toISOString(),
+      };
+
       await axiosSecure.post("/pets", pet);
       toast.success("Pet added successfully!");
-      setUploadedImage("");
+      resetForm();
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-      resetForm();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add pet");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -138,7 +132,7 @@ const AddPetForm = () => {
                   const file = e.target.files[0];
                   if (file) {
                     setImagePreview(URL.createObjectURL(file));
-                    handleImageUpload(file);
+                    setFieldValue("petImage", file);
                   }
                 }}
                 className="border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md p-2 w-full"
@@ -149,6 +143,9 @@ const AddPetForm = () => {
                   className="h-48 w-48 object-cover mt-4 rounded-xl border dark:border-gray-600"
                   alt="Preview"
                 />
+              )}
+              {touched.petImage && errors.petImage && (
+                <div className="text-red-500 text-sm mt-1">{errors.petImage}</div>
               )}
             </div>
 
@@ -273,7 +270,7 @@ const AddPetForm = () => {
                   : "bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 dark:from-teal-500 dark:to-teal-600 hover:dark:from-teal-600 hover:dark:to-teal-700"
               }`}
             >
-              {uploading ? "Uploading Image..." : "List Pet for Adoption"}
+              {uploading ? "Uploading & Saving..." : "List Pet for Adoption"}
             </Button>
           </Form>
         )}

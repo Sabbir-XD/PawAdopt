@@ -144,7 +144,7 @@ const PetDetails = () => {
                 {pet.shortDescription}
               </p>
               <div
-                className="text-gray-800 dark:text-gray-200"
+                className="text-gray-800 dark:text-gray-700"
                 dangerouslySetInnerHTML={{ __html: pet.longDescription }}
               />
             </div>

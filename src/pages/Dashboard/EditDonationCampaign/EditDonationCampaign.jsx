@@ -9,6 +9,7 @@ import "react-quill/dist/quill.snow.css";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
 import useAxiosSecure from "@/Hooks/useAxiosSecure/useAxiosSecure";
 import { Button } from "@/components/ui/button";
+import { FaArrowLeft } from "react-icons/fa";
 
 const EditDonationCampaign = () => {
   const { id } = useParams();
@@ -98,13 +99,25 @@ const EditDonationCampaign = () => {
 
   if (!campaignData) {
     return (
-      <p className="text-center text-gray-500">Loading campaign data...</p>
+      <p className="text-center text-gray-500 dark:text-gray-400">
+        Loading campaign data...
+      </p>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-3xl font-bold text-center text-emerald-600 mb-6">
+    <div className="relative max-w-3xl mx-auto p-4 bg-white dark:bg-gray-900 rounded-xl shadow-md">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center space-x-2  text-gray-800 dark:text-teal-500"
+        aria-label="Go back"
+      >
+        <FaArrowLeft />
+        <span className="text-sm font-medium">Back to Campaigns</span>
+      </button>
+
+      <h2 className="text-3xl font-bold text-center text-emerald-600 dark:text-emerald-400 mb-6">
         Edit Donation Campaign
       </h2>
 
@@ -123,7 +136,7 @@ const EditDonationCampaign = () => {
           <Form className="space-y-6">
             {/* Image Upload */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Pet Picture
               </label>
               <input
@@ -137,23 +150,26 @@ const EditDonationCampaign = () => {
                     handleImageUpload(file);
                   }
                 }}
-                className="w-full border p-2 rounded-md"
+                className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
               {imagePreview && (
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  className="mt-3 w-48 h-48 object-cover rounded-lg border"
+                  className="mt-3 w-48 h-48 object-cover rounded-lg border border-gray-300 dark:border-gray-700"
                 />
               )}
             </div>
 
             {/* Pet Name */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Pet Name
               </label>
-              <Field name="petName" className="w-full border p-2 rounded-md" />
+              <Field
+                name="petName"
+                className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              />
               <ErrorMessage
                 name="petName"
                 component="div"
@@ -163,13 +179,13 @@ const EditDonationCampaign = () => {
 
             {/* Max Donation */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Maximum Donation Amount
               </label>
               <Field
                 type="number"
                 name="maxDonation"
-                className="w-full border p-2 rounded-md"
+                className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
               <ErrorMessage
                 name="maxDonation"
@@ -180,13 +196,13 @@ const EditDonationCampaign = () => {
 
             {/* Deadline */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Last Date of Donation
               </label>
               <Field
                 type="date"
                 name="deadline"
-                className="w-full border p-2 rounded-md"
+                className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
               <ErrorMessage
                 name="deadline"
@@ -197,12 +213,12 @@ const EditDonationCampaign = () => {
 
             {/* Short Description */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Short Description
               </label>
               <Field
                 name="shortDescription"
-                className="w-full border p-2 rounded-md"
+                className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
               <ErrorMessage
                 name="shortDescription"
@@ -213,13 +229,14 @@ const EditDonationCampaign = () => {
 
             {/* Long Description */}
             <div>
-              <label className="block font-medium text-gray-700 mb-1">
+              <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Long Description
               </label>
               <ReactQuill
                 theme="snow"
                 value={values.longDescription}
                 onChange={(value) => setFieldValue("longDescription", value)}
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md"
               />
               {touched.longDescription && errors.longDescription && (
                 <div className="text-red-500 text-sm mt-1">

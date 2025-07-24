@@ -48,6 +48,11 @@ const userNavItems = [
     icon: HandCoins,
   },
   {
+    name: "My Donations Campaigns",
+    href: "/dashboard/my-donations-campaigns",
+    icon: HandCoins,
+  },
+  {
     name: "My Donations",
     href: "/dashboard/my-donations",
     icon: ListChecks,

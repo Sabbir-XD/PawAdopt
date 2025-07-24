@@ -48,5 +48,5 @@ PawAdopt is a full-featured pet adoption platform connecting pets with loving fa
 
 1. Clone repo:  
 ```bash
-git clone https://github.com/your-username/pawadopt.git
+git clone https://github.com/Sabbir-XD/pawadopt.git
 cd pawadopt

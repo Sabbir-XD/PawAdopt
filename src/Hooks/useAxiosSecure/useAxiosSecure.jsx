@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import UseAuth from "../UseAuth/UseAuth";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // Replace with your server URL
+  baseURL: import.meta.env.VITE_API_URL, 
 });
 const useAxiosSecure = () => {
   const { user, handleLogoutUser } = UseAuth();

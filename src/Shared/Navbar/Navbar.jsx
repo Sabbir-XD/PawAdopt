@@ -6,10 +6,8 @@ import {
   FaPaw,
   FaBars,
   FaTimes,
-  FaHeart,
   FaHome,
   FaDog,
-  FaUser,
   FaSignOutAlt,
 } from "react-icons/fa";
 import { GiCash } from "react-icons/gi";
@@ -35,7 +33,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [scrolled]);
 
-  const links = [
+  const baseLinks = [
     { name: "Home", to: "/", icon: <FaHome className="mr-2" /> },
     {
       name: "Pet Listing",
@@ -48,6 +46,20 @@ const Navbar = () => {
       icon: <GiCash className="mr-2" />,
     },
   ];
+
+  const userLinks = user
+    ? [
+        { name: "Dashboard", to: "/dashboard", icon: <FaPaw className="mr-2" /> },
+        {
+          name: "Logout",
+          to: "#",
+          icon: <FaSignOutAlt className="mr-2" />,
+          onClick: handleLogoutUser,
+        },
+      ]
+    : [];
+
+  const allLinks = [...baseLinks, ...userLinks];
 
   const baseLinkClass =
     "flex items-center py-2 px-3 rounded-lg font-medium transition-all duration-300";
@@ -100,12 +112,15 @@ const Navbar = () => {
 
           {/* Center: Desktop Links */}
           <div className="hidden md:flex space-x-1">
-            {links.map((link) => (
+            {allLinks.map((link) => (
               <NavLink
                 key={link.name}
                 to={link.to}
+                onClick={link.onClick}
                 className={({ isActive }) =>
-                  `${baseLinkClass} ${isActive ? activeClass : inactiveClass}`
+                  `${baseLinkClass} ${
+                    isActive ? activeClass : inactiveClass
+                  } ${link.onClick ? "cursor-pointer" : ""}`
                 }
                 aria-label={link.name}
               >
@@ -144,7 +159,7 @@ const Navbar = () => {
                 </motion.div>
               </>
             ) : (
-              <Menu as="div" className="relative inline-block text-left">
+              <Menu as="div" className="relative md:hidden">
                 {({ open }) => (
                   <>
                     <Menu.Button className="flex items-center space-x-2 focus:outline-none group">
@@ -164,60 +179,7 @@ const Navbar = () => {
                         />
                         <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
                       </motion.div>
-                      <motion.div
-                        animate={{ rotate: open ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <FaChevronDown className="w-4 h-4 text-white/80 group-hover:text-white transition dark:text-white/90" />
-                      </motion.div>
                     </Menu.Button>
-
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-xl ring-1 ring-black/5 z-50 focus:outline-none overflow-hidden dark:bg-gray-800 dark:ring-white/10">
-                        <div className="py-1">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <NavLink
-                                to="/dashboard"
-                                className={`${
-                                  active
-                                    ? "bg-teal-50 text-teal-700 dark:bg-gray-700 dark:text-teal-400"
-                                    : "text-gray-700 dark:text-gray-200"
-                                } block px-4 py-3 text-sm font-medium flex items-center`}
-                              >
-                                <FaPaw className="mr-2 text-teal-600 dark:text-teal-400" />
-                                Dashboard
-                              </NavLink>
-                            )}
-                          </Menu.Item>
-
-                          <div className="border-t border-gray-100 dark:border-gray-700"></div>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                onClick={handleLogoutUser}
-                                className={`${
-                                  active
-                                    ? "bg-teal-50 text-teal-700 dark:bg-gray-700 dark:text-teal-400"
-                                    : "text-gray-700 dark:text-gray-200"
-                                } block w-full px-4 py-3 text-left text-sm font-medium flex items-center`}
-                              >
-                                <FaSignOutAlt className="mr-2 text-teal-600 dark:text-teal-400" />
-                                Logout
-                              </button>
-                            )}
-                          </Menu.Item>
-                        </div>
-                      </Menu.Items>
-                    </Transition>
                   </>
                 )}
               </Menu>
@@ -237,29 +199,43 @@ const Navbar = () => {
             className="md:hidden bg-gradient-to-b from-teal-700 to-cyan-700 shadow-xl overflow-hidden dark:from-teal-800 dark:to-cyan-800"
           >
             <div className="px-4 pt-2 pb-6 space-y-2">
-              {links.map((link) => (
+              {allLinks.map((link, index) => (
                 <motion.div
                   key={link.name}
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  <NavLink
-                    to={link.to}
-                    className={({ isActive }) =>
-                      `block rounded-xl px-4 py-3 text-lg font-medium ${
-                        isActive
-                          ? "bg-white/20 text-white shadow-md dark:bg-white/30"
-                          : "text-white/90 hover:text-white hover:bg-white/10 dark:hover:bg-white/20"
-                      } flex items-center`
-                    }
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.icon}
-                    {link.name}
-                  </NavLink>
+                  {link.onClick ? (
+                    <button
+                      onClick={() => {
+                        link.onClick();
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`block w-full rounded-xl px-4 py-3 text-lg font-medium ${inactiveClass} flex items-center`}
+                    >
+                      {link.icon}
+                      {link.name}
+                    </button>
+                  ) : (
+                    <NavLink
+                      to={link.to}
+                      className={({ isActive }) =>
+                        `block rounded-xl px-4 py-3 text-lg font-medium ${
+                          isActive
+                            ? "bg-white/20 text-white shadow-md dark:bg-white/30"
+                            : "text-white/90 hover:text-white hover:bg-white/10 dark:hover:bg-white/20"
+                        } flex items-center`
+                      }
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.icon}
+                      {link.name}
+                    </NavLink>
+                  )}
                 </motion.div>
               ))}
+
               {!user && (
                 <div className="pt-4 border-t border-white/20 space-y-2">
                   <motion.div
@@ -288,40 +264,6 @@ const Navbar = () => {
                     >
                       Create Account
                     </NavLink>
-                  </motion.div>
-                </div>
-              )}
-              {user && (
-                <div className="pt-4 border-t border-white/20 space-y-2">
-                  <motion.div
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <NavLink
-                      to="/dashboard"
-                      className="block text-white px-4 py-3 rounded-xl text-lg font-medium flex items-center hover:bg-white/10 dark:hover:bg-white/20"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <FaPaw className="mr-2" />
-                      Dashboard
-                    </NavLink>
-                  </motion.div>
-                  <motion.div
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.15 }}
-                  >
-                    <button
-                      onClick={() => {
-                        handleLogoutUser();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="block w-full text-white px-4 py-3 rounded-xl text-lg font-medium text-left flex items-center hover:bg-white/10 dark:hover:bg-white/20"
-                    >
-                      <FaSignOutAlt className="mr-2" />
-                      Logout
-                    </button>
                   </motion.div>
                 </div>
               )}

@@ -159,7 +159,6 @@ const Dashboard = () => {
     },
   });
 
-  console.log(donationHistory);
 
   // Generate sample data for the last 7 days
   const generateWeeklyData = () => {

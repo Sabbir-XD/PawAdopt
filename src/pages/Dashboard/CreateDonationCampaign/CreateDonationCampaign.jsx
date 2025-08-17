@@ -92,7 +92,7 @@ const CreateDonationCampaign = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md">
+    <div className="max-w-3xl mx-auto p-2 md:p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md">
       <h2 className="text-3xl font-bold text-center text-teal-600 dark:text-teal-400 mb-6">
         Create Donation Campaign
       </h2>

@@ -9,6 +9,7 @@ import {
   FaHome,
   FaDog,
   FaSignOutAlt,
+  FaUser,
 } from "react-icons/fa";
 import { GiCash } from "react-icons/gi";
 import UseAuth from "@/Hooks/UseAuth/UseAuth";
@@ -49,13 +50,7 @@ const Navbar = () => {
 
   const userLinks = user
     ? [
-        { name: "Dashboard", to: "/dashboard", icon: <FaPaw className="mr-2" /> },
-        {
-          name: "Logout",
-          to: "#",
-          icon: <FaSignOutAlt className="mr-2" />,
-          onClick: handleLogoutUser,
-        },
+        { name: "Dashboard", to: "/dashboard", icon: <FaUser className="mr-2" /> },
       ]
     : [];
 
@@ -116,11 +111,8 @@ const Navbar = () => {
               <NavLink
                 key={link.name}
                 to={link.to}
-                onClick={link.onClick}
                 className={({ isActive }) =>
-                  `${baseLinkClass} ${
-                    isActive ? activeClass : inactiveClass
-                  } ${link.onClick ? "cursor-pointer" : ""}`
+                  `${baseLinkClass} ${isActive ? activeClass : inactiveClass}`
                 }
                 aria-label={link.name}
               >
@@ -159,30 +151,85 @@ const Navbar = () => {
                 </motion.div>
               </>
             ) : (
-              <Menu as="div" className="relative md:hidden">
-                {({ open }) => (
-                  <>
-                    <Menu.Button className="flex items-center space-x-2 focus:outline-none group">
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="relative"
+              <>
+                {/* Logout button - visible on lg+ screens */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="hidden lg:flex"
+                >
+                  <button
+                    onClick={handleLogoutUser}
+                    className="bg-white/10 text-white hover:bg-white/20 px-4 py-2 rounded-lg flex items-center font-medium shadow-md hover:shadow-lg transition-all dark:bg-gray-700 dark:hover:bg-gray-600"
+                  >
+                    <FaSignOutAlt className="mr-2" />
+                    Logout
+                  </button>
+                </motion.div>
+
+                {/* User avatar with dropdown - visible on all screens */}
+                <Menu as="div" className="relative">
+                  {({ open }) => (
+                    <>
+                      <Menu.Button className="flex items-center space-x-2 focus:outline-none group">
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="relative"
+                        >
+                          <img
+                            src={user.photoURL || "https://github.com/shadcn.png"}
+                            alt="Profile"
+                            className="h-10 w-10 rounded-full object-cover border-2 border-white shadow-md bg-gray-200 dark:border-gray-700"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/default-profile.png";
+                            }}
+                          />
+                          <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
+                        </motion.div>
+                        <motion.div
+                          animate={{ rotate: open ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="hidden lg:block"
+                        >
+                          <FaChevronDown className="w-4 h-4 text-white/80 group-hover:text-white transition dark:text-white/90" />
+                        </motion.div>
+                      </Menu.Button>
+
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
                       >
-                        <img
-                          src={user.photoURL || "https://github.com/shadcn.png"}
-                          alt="Profile"
-                          className="h-10 w-10 rounded-full object-cover border-2 border-white shadow-md bg-gray-200 dark:border-gray-700"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/default-profile.png";
-                          }}
-                        />
-                        <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
-                      </motion.div>
-                    </Menu.Button>
-                  </>
-                )}
-              </Menu>
+                        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-xl ring-1 ring-black/5 z-50 focus:outline-none overflow-hidden dark:bg-gray-800 dark:ring-white/10">
+                          <div className="py-1">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  onClick={handleLogoutUser}
+                                  className={`${
+                                    active
+                                      ? "bg-teal-50 text-teal-700 dark:bg-gray-700 dark:text-teal-400"
+                                      : "text-gray-700 dark:text-gray-200"
+                                  } block w-full px-4 py-3 text-left text-sm font-medium flex items-center lg:hidden`}
+                                >
+                                  <FaSignOutAlt className="mr-2 text-teal-600 dark:text-teal-400" />
+                                  Logout
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </>
+                  )}
+                </Menu>
+              </>
             )}
           </div>
         </div>
@@ -206,35 +253,41 @@ const Navbar = () => {
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  {link.onClick ? (
-                    <button
-                      onClick={() => {
-                        link.onClick();
-                        setMobileMenuOpen(false);
-                      }}
-                      className={`block w-full rounded-xl px-4 py-3 text-lg font-medium ${inactiveClass} flex items-center`}
-                    >
-                      {link.icon}
-                      {link.name}
-                    </button>
-                  ) : (
-                    <NavLink
-                      to={link.to}
-                      className={({ isActive }) =>
-                        `block rounded-xl px-4 py-3 text-lg font-medium ${
-                          isActive
-                            ? "bg-white/20 text-white shadow-md dark:bg-white/30"
-                            : "text-white/90 hover:text-white hover:bg-white/10 dark:hover:bg-white/20"
-                        } flex items-center`
-                      }
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {link.icon}
-                      {link.name}
-                    </NavLink>
-                  )}
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      `block rounded-xl px-4 py-3 text-lg font-medium ${
+                        isActive
+                          ? "bg-white/20 text-white shadow-md dark:bg-white/30"
+                          : "text-white/90 hover:text-white hover:bg-white/10 dark:hover:bg-white/20"
+                      } flex items-center`
+                    }
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.icon}
+                    {link.name}
+                  </NavLink>
                 </motion.div>
               ))}
+
+              {user && (
+                <motion.div
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <button
+                    onClick={() => {
+                      handleLogoutUser();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-white px-4 py-3 rounded-xl text-lg font-medium text-left flex items-center hover:bg-white/10 dark:hover:bg-white/20"
+                  >
+                    <FaSignOutAlt className="mr-2" />
+                    Logout
+                  </button>
+                </motion.div>
+              )}
 
               {!user && (
                 <div className="pt-4 border-t border-white/20 space-y-2">

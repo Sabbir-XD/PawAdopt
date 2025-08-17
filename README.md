@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 =======
 # PawAdopt - Pet Adoption & Donation Platform
 

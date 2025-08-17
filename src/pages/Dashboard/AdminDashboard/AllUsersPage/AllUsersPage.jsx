@@ -35,27 +35,6 @@ const AllUsersPage = () => {
   const totalUsers = data?.totalUsers || 0;
   const totalPages = Math.ceil(totalUsers / limit);
 
-  // const handleMakeAdmin = async (userId) => {
-  //   try {
-  //     const res = await axiosSecure.patch(
-  //       `/users/admin/${userId}`,
-  //       null,
-  //       {
-  //         headers: {
-  //           email: user?.email, // verifyAdmin middleware জন্য
-  //         },
-  //       }
-  //     );
-  //     if (res.data.modifiedCount > 0) {
-  //       toast.success("Promoted to admin");
-  //       refetch();
-  //     }
-  //   } catch (err) {
-  //     console.error("Make admin error:", err.response || err);
-  //     toast.error("Failed to promote. You may not have permission.");
-  //   }
-  // };
-
   const handleMakeAdmin = async (userId) => {
     try {
       const res = await axiosSecure.patch(`/users/admin/${userId}`);

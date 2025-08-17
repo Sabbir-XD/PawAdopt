@@ -3,7 +3,7 @@ import Banner from "../Banner/Banner";
 import PetsCategory from "../PetsCategory/PetsCategory";
 import AdoptionCTA from "../AdoptionCTA/AdoptionCTA";
 import AboutUs from "../AboutUs/AboutUs";
-// import SuccessStories from "../SuccessStories/SuccessStories";
+import SuccessStories from "../SuccessStories/SuccessStories";
 import AdoptionProcess from "../AdoptionProcess/AdoptionProcess";
 import AboutHowTo from "../AboutHowTo/AboutHowTo";
 
@@ -14,7 +14,7 @@ const Home = () => {
       <PetsCategory />
       <AdoptionCTA />
       <AboutHowTo />
-      {/* <SuccessStories /> */}
+      <SuccessStories />
       <AboutUs />
       <AdoptionProcess />
     </div>
